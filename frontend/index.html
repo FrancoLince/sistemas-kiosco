@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiosco POS | Sistema de Gestión</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="pos-container">
+        <!-- Main Top Bar -->
+        <header class="pos-header">
+            <h1>Punto de Venta</h1>
+            <div class="search-box">
+                <input type="text" id="barcode-input" placeholder="Escanear código o buscar..." autocomplete="off">
+            </div>
+        </header>
+
+        <!-- POS Workstation Layout -->
+        <div class="pos-layout">
+            <!-- Catalog Side -->
+            <section class="pos-catalog">
+                <h2 class="section-title">Catálogo de Productos</h2>
+                <div id="products-list">
+                    <!-- Cards will be populated dynamically -->
+                </div>
+            </section>
+
+            <!-- Checkout Ticket Side -->
+            <aside class="pos-ticket">
+                <h2>Ticket de Venta</h2>
+                
+                <div id="ticket-items">
+                    <!-- Selected items list -->
+                </div>
+
+                <div class="ticket-summary">
+                    <div class="summary-line">
+                        <span>Método de Pago</span>
+                        <select id="payment-method">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta Débito/Crédito</option>
+                            <option value="transferencia">Transferencia / MercadoPago</option>
+                        </select>
+                    </div>
+
+                    <div class="summary-line total-line">
+                        <span>TOTAL</span>
+                        <strong id="ticket-total">$0,00</strong>
+                    </div>
+
+                    <button id="btn-finish-sale" class="btn-complete-sale" type="button">
+                        COBRAR (Enter)
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Application Logic Modules -->
+    <script type="module" src="js/api.js"></script>
+    <script type="module" src="js/pos.js"></script>
+</body>
+</html>

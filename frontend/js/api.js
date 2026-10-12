@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const API_BASE_URL = 'https://sistemas-kiosco.onrender.com';
 
 async function requestJson(endpoint, options = {}) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {

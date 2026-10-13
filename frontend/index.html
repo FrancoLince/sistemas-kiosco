@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiosco POS | Sistema de Gestión</title>
+    <title>Kiosco POS | Modo Cajero</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -11,8 +11,13 @@
         <!-- Main Top Bar -->
         <header class="pos-header">
             <h1>Punto de Venta</h1>
-            <div class="search-box">
-                <input type="text" id="barcode-input" placeholder="Escanear código o buscar..." autocomplete="off">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button id="btn-open-product-modal" class="btn-secondary" type="button">
+                    + Nuevo Producto
+                </button>
+                <div class="search-box">
+                    <input type="text" id="barcode-input" placeholder="Escanear código, buscar o '3*' para multiplicar... (F2)" autocomplete="off">
+                </div>
             </div>
         </header>
 
@@ -22,7 +27,7 @@
             <section class="pos-catalog">
                 <h2 class="section-title">Catálogo de Productos</h2>
                 <div id="products-list">
-                    <!-- Cards will be populated dynamically -->
+                    <!-- Cards populated dynamically -->
                 </div>
             </section>
 
@@ -36,7 +41,7 @@
 
                 <div class="ticket-summary">
                     <div class="summary-line">
-                        <span>Método de Pago</span>
+                        <span>Método de Pago (F4)</span>
                         <select id="payment-method">
                             <option value="efectivo">Efectivo</option>
                             <option value="tarjeta">Tarjeta Débito/Crédito</option>
@@ -54,6 +59,45 @@
                     </button>
                 </div>
             </aside>
+        </div>
+    </div>
+
+    <!-- Modal Carga / Edición de Producto -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="modal-title">Agregar Nuevo Producto</h2>
+                <button id="btn-close-modal" class="btn-close-modal" type="button">&times;</button>
+            </div>
+            <form id="product-form" class="modal-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-group">
+                    <label for="product-name">Nombre del Producto *</label>
+                    <input type="text" id="product-name" placeholder="Ej. Coca Cola 1.5L" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="product-barcode">Código de Barras</label>
+                    <input type="text" id="product-barcode" placeholder="Escanear o ingresar número" autocomplete="off">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-price">Precio ($) *</label>
+                        <input type="number" id="product-price" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-stock">Stock Inicial</label>
+                        <input type="number" id="product-stock" min="0" value="0">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                    <button type="button" id="btn-cancel-modal" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                </div>
+            </form>
         </div>
     </div>
 

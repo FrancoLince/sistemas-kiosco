@@ -62,7 +62,8 @@
         </div>
     </div>
 
-    <!-- Modal Carga / Edición de Producto -->
+    
+        <!-- Modal Carga / Edición de Producto -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -82,6 +83,11 @@
                     <input type="text" id="product-barcode" placeholder="Escanear o ingresar número" autocomplete="off">
                 </div>
 
+                <div class="form-group">
+                    <label for="product-image">URL de la Imagen (Opcional)</label>
+                    <input type="url" id="product-image" placeholder="https://ejemplo.com/imagen.jpg" autocomplete="off">
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="product-price">Precio ($) *</label>
@@ -93,9 +99,14 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
-                    <button type="button" id="btn-cancel-modal" class="btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                    <button type="button" id="btn-delete-product" class="btn-remove" style="display: none; padding: 8px 14px; width: auto; height: auto;">
+                        🗑️ Eliminar Producto
+                    </button>
+                    <div style="display: flex; gap: 10px; margin-left: auto;">
+                        <button type="button" id="btn-cancel-modal" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Producto</button>
+                    </div>
                 </div>
             </form>
         </div>

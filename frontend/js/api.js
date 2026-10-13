@@ -20,8 +20,17 @@ async function requestJson(endpoint, options = {}) {
 
 export async function fetchProductsAPI() {
     const response = await requestJson('/products');
-    // Si la respuesta es un array directo devuelve response, si viene dentro de data devuelve response.data
     return Array.isArray(response) ? response : (response.data || []);
+}
+
+export async function fetchCategoriesAPI() {
+    const response = await requestJson('/products/categories');
+    return Array.isArray(response) ? response : [];
+}
+
+export async function fetchReplenishmentAPI() {
+    const response = await requestJson('/products/replenishment');
+    return response.items || [];
 }
 
 export async function sendSaleAPI(payload) {
@@ -35,6 +44,7 @@ export async function fetchDailyReportAPI() {
     const response = await requestJson('/reports/daily-summary');
     return response.data || {};
 }
+
 export async function createProductAPI(productData) {
     return await requestJson('/products', {
         method: 'POST',
@@ -48,6 +58,7 @@ export async function updateProductAPI(id, productData) {
         body: JSON.stringify(productData)
     });
 }
+
 export async function deleteProductAPI(id) {
     return await requestJson(`/products/${id}`, {
         method: 'DELETE'

@@ -1,0 +1,594 @@
+@import url('variables.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+background-color: var(--bg-app);
+color: var(--text-body);
+line-height: 1.5;
+min-height: 100vh;
+padding: 24px;
+-webkit-font-smoothing: antialiased;
+}
+
+/* --- Layout --- */
+.pos-container {
+max-width: 1440px;
+margin: 0 auto;
+}
+
+.pos-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 24px;
+background: var(--bg-surface);
+padding: 16px 24px;
+border-radius: var(--radius-lg);
+box-shadow: var(--shadow-sm);
+border: 1px solid var(--border-subtle);
+}
+
+.pos-header h1 {
+font-size: 1.35rem;
+font-weight: 700;
+color: var(--text-heading);
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.pos-header h1::before {
+content: '';
+display: inline-block;
+width: 10px;
+height: 10px;
+background-color: var(--color-success);
+border-radius: var(--radius-full);
+}
+
+.search-box {
+position: relative;
+width: 380px;
+}
+
+.search-box input {
+width: 100%;
+padding: 10px 16px 10px 40px;
+font-size: 0.9rem;
+font-weight: 500;
+color: var(--text-heading);
+background-color: var(--bg-subtle);
+border: 1.5px solid transparent;
+border-radius: var(--radius-md);
+outline: none;
+transition: var(--transition-fast);
+}
+
+.search-box input:focus {
+background-color: var(--bg-surface);
+border-color: var(--brand-primary);
+box-shadow: 0 0 0 4px var(--brand-primary-light);
+}
+
+.search-box::before {
+content: '🔍';
+position: absolute;
+left: 12px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 0.9rem;
+opacity: 0.5;
+pointer-events: none;
+}
+
+/* --- Main Layout Grid --- */
+.pos-layout {
+display: grid;
+grid-template-columns: 1fr 400px;
+gap: 24px;
+align-items: start;
+}
+
+/* --- Catalog Section --- */
+.pos-catalog {
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
+.section-title {
+font-size: 1.1rem;
+font-weight: 600;
+color: var(--text-heading);
+}
+
+#products-list {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 16px;
+}
+
+/* Product Card Styling */
+.product-card {
+background: var(--bg-surface);
+padding: 20px;
+border-radius: var(--radius-md);
+border: 1px solid var(--border-subtle);
+box-shadow: var(--shadow-xs);
+transition: var(--transition-normal);
+cursor: pointer;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+position: relative;
+overflow: hidden;
+}
+
+.product-card::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 3px;
+background: var(--brand-primary);
+opacity: 0;
+transition: var(--transition-fast);
+}
+
+.product-card:hover {
+transform: translateY(-2px);
+box-shadow: var(--shadow-md);
+border-color: var(--border-strong);
+}
+
+.product-card:hover::after {
+opacity: 1;
+}
+
+.product-card h3 {
+font-size: 0.95rem;
+font-weight: 600;
+color: var(--text-heading);
+margin-bottom: 8px;
+line-height: 1.3;
+}
+
+.product-card .price {
+font-size: 1.25rem;
+font-weight: 700;
+color: var(--brand-primary);
+margin-bottom: 8px;
+}
+
+.product-card small {
+font-size: 0.75rem;
+font-weight: 600;
+color: var(--text-muted);
+background: var(--bg-subtle);
+padding: 3px 8px;
+border-radius: var(--radius-sm);
+align-self: flex-start;
+}
+
+/* --- Sidebar Ticket Styling --- */
+.pos-ticket {
+background: var(--bg-surface);
+padding: 24px;
+border-radius: var(--radius-lg);
+border: 1px solid var(--border-subtle);
+box-shadow: var(--shadow-sm);
+display: flex;
+flex-direction: column;
+height: calc(100vh - 120px);
+position: sticky;
+top: 24px;
+}
+
+.pos-ticket h2 {
+font-size: 1.15rem;
+font-weight: 700;
+color: var(--text-heading);
+padding-bottom: 16px;
+border-bottom: 1px solid var(--border-subtle);
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+#ticket-items {
+flex: 1;
+overflow-y: auto;
+margin: 16px 0;
+padding-right: 4px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+/* Scrollbar Customization */
+#ticket-items::-webkit-scrollbar {
+width: 5px;
+}
+
+#ticket-items::-webkit-scrollbar-thumb {
+background: var(--border-strong);
+border-radius: var(--radius-full);
+}
+
+/* Individual Ticket Item */
+.ticket-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px;
+background: var(--bg-app);
+border-radius: var(--radius-md);
+border: 1px solid var(--border-subtle);
+transition: var(--transition-fast);
+}
+
+.ticket-row:hover {
+border-color: var(--border-strong);
+}
+
+.ticket-row div {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.ticket-row strong {
+font-size: 0.88rem;
+font-weight: 600;
+color: var(--text-heading);
+}
+
+.ticket-row small {
+font-size: 0.78rem;
+color: var(--text-muted);
+}
+
+.ticket-row span {
+font-size: 0.95rem;
+font-weight: 700;
+color: var(--text-heading);
+margin-left: auto;
+margin-right: 12px;
+}
+
+.btn-remove {
+background: var(--color-danger-light);
+border: none;
+color: var(--color-danger);
+width: 28px;
+height: 28px;
+border-radius: var(--radius-sm);
+font-size: 1rem;
+font-weight: bold;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: var(--transition-fast);
+}
+
+.btn-remove:hover {
+background: var(--color-danger);
+color: var(--text-inverse);
+}
+
+/* --- Checkout Controls --- */
+.ticket-summary {
+border-top: 1px solid var(--border-subtle);
+padding-top: 16px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+.summary-line {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.9rem;
+color: var(--text-muted);
+}
+
+.summary-line select {
+padding: 8px 12px;
+font-size: 0.88rem;
+font-weight: 500;
+color: var(--text-heading);
+background: var(--bg-subtle);
+border: 1px solid var(--border-subtle);
+border-radius: var(--radius-sm);
+outline: none;
+cursor: pointer;
+}
+
+.summary-line select:focus {
+border-color: var(--brand-primary);
+}
+
+.total-line {
+font-size: 1.35rem;
+font-weight: 700;
+color: var(--text-heading);
+margin-top: 4px;
+}
+
+.total-line strong {
+color: var(--color-success);
+}
+
+.btn-complete-sale {
+width: 100%;
+padding: 16px;
+background: var(--color-success);
+color: var(--text-inverse);
+border: none;
+border-radius: var(--radius-md);
+font-size: 1rem;
+font-weight: 700;
+letter-spacing: 0.3px;
+cursor: pointer;
+box-shadow: var(--shadow-sm);
+transition: var(--transition-fast);
+}
+
+.btn-complete-sale:hover {
+background: var(--color-success-hover);
+box-shadow: var(--shadow-md);
+transform: translateY(-1px);
+}
+
+.btn-complete-sale:active {
+transform: translateY(0);
+}
+/* --- Modal ABM Productos --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-card {
+  background: var(--bg-surface);
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transform: translateY(-20px);
+  transition: transform var(--transition-fast);
+}
+
+.modal-overlay.active .modal-card {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-close-modal:hover {
+  background: var(--bg-subtle);
+  color: var(--text-heading);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  color: var(--text-heading);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.form-group input:focus {
+  background: var(--bg-surface);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-primary-light);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background: var(--bg-subtle);
+  color: var(--text-heading);
+  border: 1px solid var(--border-subtle);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--border-subtle);
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--brand-primary-hover);
+}
+/* ==========================================
+   MEDIA QUERIES - RESPONSIVE DESIGN
+   ========================================== */
+
+/* Tablets (pantallas menores a 1024px) */
+@media (max-width: 1024px) {
+  .pos-layout {
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+  }
+  
+  .pos-ticket {
+    padding: 16px;
+  }
+}
+
+/* Celulares y Tablets Verticales (pantallas menores a 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+
+  /* Header flexible en columna */
+  .pos-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  /* Cambiar el Grid a 1 sola columna */
+  .pos-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Ajustar catálogo de productos */
+  #products-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .product-card {
+    padding: 14px;
+  }
+
+  .product-card h3 {
+    font-size: 0.88rem;
+  }
+
+  .product-card .price {
+    font-size: 1.1rem;
+  }
+
+  /* Ticket adaptable en móviles */
+  .pos-ticket {
+    position: static; /* Quitar sticky para que fluya en movil */
+    height: auto;
+    max-height: none;
+    order: 2; /* Asegurar que el ticket vaya abajo del catálogo si se desea */
+  }
+
+  #ticket-items {
+    max-height: 250px; /* Limitar altura interna con scroll en celular */
+  }
+
+  .btn-complete-sale {
+    padding: 14px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Celulares pequeños (menores a 480px) */
+@media (max-width: 480px) {
+  #products-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas parejas de productos */
+    gap: 10px;
+  }
+
+  .ticket-row {
+    padding: 8px 10px;
+  }
+
+  .ticket-row strong {
+    font-size: 0.82rem;
+  }
+
+  .ticket-row span {
+    font-size: 0.88rem;
+    margin-right: 6px;
+  }
+}

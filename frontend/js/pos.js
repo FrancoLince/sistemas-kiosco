@@ -3,7 +3,8 @@ import {
     sendSaleAPI, 
     createProductAPI, 
     updateProductAPI,
-    deleteProductAPI 
+    deleteProductAPI,
+    fetchDailyReportAPI 
 } from './api.js';
 
 // Elementos Principales del POS
@@ -14,7 +15,7 @@ const ticketTotal = document.querySelector('#ticket-total');
 const btnFinishSale = document.querySelector('#btn-finish-sale');
 const paymentMethodSelect = document.querySelector('#payment-method');
 
-// Elementos del Modal ABM
+// Elementos del Modal ABM Productos
 const productModal = document.querySelector('#product-modal');
 const btnOpenProductModal = document.querySelector('#btn-open-product-modal');
 const btnCloseModal = document.querySelector('#btn-close-modal');
@@ -30,6 +31,16 @@ const inputProductStock = document.querySelector('#product-stock');
 const btnDeleteProduct = document.querySelector('#btn-delete-product');
 const modalTitle = document.querySelector('#modal-title');
 
+// Elementos del Modal Historial de Ventas
+const historyModal = document.querySelector('#history-modal');
+const btnOpenHistoryModal = document.querySelector('#btn-open-history-modal');
+const btnCloseHistoryModal = document.querySelector('#btn-close-history-modal');
+const salesHistoryList = document.querySelector('#sales-history-list');
+
+const reportGrandTotal = document.querySelector('#report-grand-total');
+const reportCashTotal = document.querySelector('#report-cash-total');
+const reportMpTotal = document.querySelector('#report-mp-total');
+
 let currentCart = [];
 let allProducts = [];
 
@@ -38,9 +49,10 @@ function formatCurrency(val) {
 }
 
 function ensureFocus() {
-    // Solo enfoca el buscador si el modal NO está abierto
-    const isModalActive = productModal && productModal.classList.contains('active');
-    if (!isModalActive && barcodeInput && document.activeElement !== paymentMethodSelect) {
+    const isProductModalActive = productModal && productModal.classList.contains('active');
+    const isHistoryModalActive = historyModal && historyModal.classList.contains('active');
+    
+    if (!isProductModalActive && !isHistoryModalActive && barcodeInput && document.activeElement !== paymentMethodSelect) {
         barcodeInput.focus();
     }
 }
@@ -51,17 +63,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     ensureFocus();
 });
 
-// Re-enfocar automáticamente al hacer clic en zonas vacías de la pantalla
+// Re-enfocar automáticamente al hacer clic en zonas vacías
 document.addEventListener('click', (e) => {
-    const isModalActive = productModal && productModal.classList.contains('active');
-    if (!isModalActive && e.target.tagName !== 'SELECT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+    const isProductModalActive = productModal && productModal.classList.contains('active');
+    const isHistoryModalActive = historyModal && historyModal.classList.contains('active');
+    
+    if (!isProductModalActive && !isHistoryModalActive && e.target.tagName !== 'SELECT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
         ensureFocus();
     }
 });
 
+// Carga optimizada con caché local (localStorage)
 async function loadProducts() {
-    allProducts = await fetchProductsAPI();
-    renderProductsGrid(allProducts);
+    const cachedProducts = localStorage.getItem('pos_products_cache');
+    if (cachedProducts) {
+        allProducts = JSON.parse(cachedProducts);
+        renderProductsGrid(allProducts);
+    }
+
+    try {
+        const freshProducts = await fetchProductsAPI();
+        if (freshProducts && Array.isArray(freshProducts)) {
+            allProducts = freshProducts;
+            localStorage.setItem('pos_products_cache', JSON.stringify(allProducts));
+            renderProductsGrid(allProducts);
+        }
+    } catch (err) {
+        console.error('Error al actualizar productos desde la API:', err);
+    }
 }
 
 function renderProductsGrid(productsToRender = allProducts) {
@@ -73,7 +102,7 @@ function renderProductsGrid(productsToRender = allProducts) {
 
     productsList.innerHTML = productsToRender.map(p => {
         const imageHtml = p.image_url 
-            ? `<img src="${p.image_url}" alt="${p.name}" class="product-card-img" onerror="this.style.display='none'">` 
+            ? `<img src="${p.image_url}" alt="${p.name}" class="product-card-img" loading="lazy" onerror="this.style.display='none'">` 
             : '';
 
         return `
@@ -91,12 +120,10 @@ function renderProductsGrid(productsToRender = allProducts) {
 }
 
 // Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
-// Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
 if (barcodeInput) {
     barcodeInput.addEventListener('input', () => {
         const query = barcodeInput.value.trim().toLowerCase();
         
-        // No filtrar si está ingresando multiplicador como "2*" o "5x"
         if (/^\d+[xX\*]$/.test(query)) return;
 
         if (!query) {
@@ -104,7 +131,6 @@ if (barcodeInput) {
             return;
         }
 
-        // Filtro inteligente: busca si alguna palabra del producto EMPIEZA con lo que tipeas
         const filtered = allProducts.filter(p => {
             const words = p.name.toLowerCase().split(' ');
             const matchesName = words.some(w => w.startsWith(query));
@@ -121,7 +147,6 @@ if (barcodeInput) {
             const rawValue = barcodeInput.value.trim();
 
             if (!rawValue) {
-                // Si presiona Enter con el buscador vacío, ejecuta el cobro directo
                 finishSale();
                 return;
             }
@@ -129,14 +154,12 @@ if (barcodeInput) {
             let quantity = 1;
             let codeOrName = rawValue;
 
-            // Soporte para patrones como "3*779123456" o "3xalfajor"
             const multiplierMatch = rawValue.match(/^(\d+)[xX\*](.+)$/);
             if (multiplierMatch) {
                 quantity = parseInt(multiplierMatch[1], 10);
                 codeOrName = multiplierMatch[2].trim();
             }
 
-            // Buscar por código exacto o por nombre
             const product = allProducts.find(p => p.barcode === codeOrName) ||
                             allProducts.find(p => p.name.toLowerCase() === codeOrName.toLowerCase());
 
@@ -244,20 +267,21 @@ if (btnFinishSale) {
 
 // Global Keyboard Shortcuts
 document.addEventListener('keydown', (e) => {
-    // F2: Enfocar buscador
     if (e.key === 'F2') {
         e.preventDefault();
         ensureFocus();
     }
-    // F4: Cambiar medio de pago
     if (e.key === 'F4') {
         e.preventDefault();
         paymentMethodSelect.focus();
     }
-    // Escape: Limpiar ticket actual o cerrar modal
     if (e.key === 'Escape') {
         if (productModal && productModal.classList.contains('active')) {
             closeModal();
+            return;
+        }
+        if (historyModal && historyModal.classList.contains('active')) {
+            closeHistoryModal();
             return;
         }
         if (currentCart.length > 0 && confirm('¿Deseás vaciar el ticket actual?')) {
@@ -270,7 +294,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Lógica para Abrir y Cerrar Modal ABM
+// Lógica Modal ABM Productos
 function openModal(product = null) {
     if (product) {
         modalTitle.textContent = 'Editar Producto';
@@ -362,6 +386,62 @@ if (productForm) {
             alert('Error al comunicar con el servidor: ' + err.message);
         }
     });
+}
+
+// Lógica Modal Historial de Ventas
+if (btnOpenHistoryModal) {
+    btnOpenHistoryModal.addEventListener('click', async () => {
+        historyModal.classList.add('active');
+        await loadSalesHistory();
+    });
+}
+
+function closeHistoryModal() {
+    if (historyModal) historyModal.classList.remove('active');
+    ensureFocus();
+}
+
+if (btnCloseHistoryModal) btnCloseHistoryModal.addEventListener('click', closeHistoryModal);
+
+async function loadSalesHistory() {
+    if (!salesHistoryList) return;
+    salesHistoryList.innerHTML = `<p style="text-align:center; color: var(--text-muted);">Cargando ventas...</p>`;
+    
+    try {
+        const reportResponse = await fetchDailyReportAPI();
+        const reportData = reportResponse.data || reportResponse;
+        
+        if (!reportData || !reportData.sales_history || reportData.sales_history.length === 0) {
+            salesHistoryList.innerHTML = `<p style="text-align:center; color: var(--text-muted);">No hay ventas registradas hoy.</p>`;
+            if (reportGrandTotal) reportGrandTotal.textContent = formatCurrency(0);
+            if (reportCashTotal) reportCashTotal.textContent = formatCurrency(0);
+            if (reportMpTotal) reportMpTotal.textContent = formatCurrency(0);
+            return;
+        }
+
+        const totals = reportData.by_payment_method || {};
+        if (reportGrandTotal) reportGrandTotal.textContent = formatCurrency(reportData.grand_total || 0);
+        if (reportCashTotal) reportCashTotal.textContent = formatCurrency(totals.efectivo || 0);
+        if (reportMpTotal) reportMpTotal.textContent = formatCurrency((totals.transferencia || 0) + (totals.tarjeta || 0));
+
+        salesHistoryList.innerHTML = reportData.sales_history.map(sale => {
+            const date = new Date(sale.created_at).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            const itemsList = sale.items.map(i => `${i.quantity}x ${i.product_name}`).join(', ');
+
+            return `
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>#${sale.id} (${date}) - <span style="text-transform: capitalize;">${sale.payment_method}</span></strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">${itemsList}</p>
+                    </div>
+                    <strong style="color: var(--color-success); font-size: 1rem;">${formatCurrency(sale.total)}</strong>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        salesHistoryList.innerHTML = `<p style="text-align:center; color: var(--color-danger);">Error al cargar reporte: ${err.message}</p>`;
+    }
 }
 
 // Exponer funciones globales

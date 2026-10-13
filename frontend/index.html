@@ -13,7 +13,7 @@
             <h1>Punto de Venta</h1>
             <div style="display: flex; gap: 12px; align-items: center;">
                 <button id="btn-open-history-modal" class="btn-secondary" type="button">
-                    📊 Ver Ventas
+                    📊 Ver Ventas / Compras
                 </button>
                 <button id="btn-open-product-modal" class="btn-secondary" type="button">
                     + Nuevo Producto
@@ -28,7 +28,15 @@
         <div class="pos-layout">
             <!-- Catalog Side -->
             <section class="pos-catalog">
-                <h2 class="section-title">Catálogo de Productos</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <h2 class="section-title">Catálogo de Productos</h2>
+                    <!-- Chips de Categorías -->
+                    <div id="category-chips" class="category-chips-container">
+                        <button class="chip active" data-cat-id="all">Todos</button>
+                        <!-- Dynamic Categories -->
+                    </div>
+                </div>
+
                 <div id="products-list">
                     <!-- Cards populated dynamically -->
                 </div>
@@ -80,9 +88,17 @@
                     <input type="text" id="product-name" placeholder="Ej. Coca Cola 1.5L" required autocomplete="off">
                 </div>
 
-                <div class="form-group">
-                    <label for="product-barcode">Código de Barras</label>
-                    <input type="text" id="product-barcode" placeholder="Escanear o ingresar número" autocomplete="off">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-barcode">Código de Barras</label>
+                        <input type="text" id="product-barcode" placeholder="Escanear o ingresar número" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Categoría</label>
+                        <select id="product-category" style="padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-subtle);">
+                            <option value="">Sin Categoría</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -96,8 +112,12 @@
                         <input type="number" id="product-price" step="0.01" min="0" placeholder="0.00" required>
                     </div>
                     <div class="form-group">
-                        <label for="product-stock">Stock Inicial</label>
+                        <label for="product-stock">Stock Actual</label>
                         <input type="number" id="product-stock" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-min-stock">Stock Mínimo</label>
+                        <input type="number" id="product-min-stock" min="0" value="5">
                     </div>
                 </div>
 
@@ -114,11 +134,11 @@
         </div>
     </div>
 
-    <!-- Modal de Historial y Reporte de Ventas -->
+    <!-- Modal de Historial y Reporte de Ventas / Reposición -->
     <div id="history-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 650px;">
             <div class="modal-header">
-                <h2>Resumen e Historial del Día</h2>
+                <h2>Cierre de Caja & Reposición</h2>
                 <button id="btn-close-history-modal" class="btn-close-modal" type="button">&times;</button>
             </div>
             
@@ -139,11 +159,20 @@
                     </div>
                 </div>
 
-                <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px;">Últimas Ventas Registradas</h3>
+                <!-- Tabs de sección -->
+                <div style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+                    <button id="tab-sales-btn" class="btn-secondary active" style="padding: 6px 12px; font-size: 0.85rem;">🛒 Últimas Ventas</button>
+                    <button id="tab-replenish-btn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">⚠️ Lista de Reposición</button>
+                </div>
 
                 <!-- Lista de Ventas con Scroll -->
-                <div id="sales-history-list" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div id="sales-history-list" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
                     <!-- Filas generadas dinámicamente -->
+                </div>
+
+                <!-- Lista de Reposición (Oculta por defecto) -->
+                <div id="replenishment-list" style="max-height: 280px; overflow-y: auto; display: none; flex-direction: column; gap: 10px;">
+                    <!-- Filas de reponer generadas dinámicamente -->
                 </div>
             </div>
         </div>

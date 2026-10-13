@@ -12,7 +12,7 @@ async function requestJson(endpoint, options = {}) {
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new Error(result.error || 'Ocurrió un error en la petición');
+        throw new Error(result.error || result.message || 'Ocurrió un error en la petición');
     }
 
     return result;
@@ -20,7 +20,8 @@ async function requestJson(endpoint, options = {}) {
 
 export async function fetchProductsAPI() {
     const response = await requestJson('/products');
-    return response.data || [];
+    // Si la respuesta es un array directo devuelve response, si viene dentro de data devuelve response.data
+    return Array.isArray(response) ? response : (response.data || []);
 }
 
 export async function sendSaleAPI(payload) {
@@ -31,6 +32,19 @@ export async function sendSaleAPI(payload) {
 }
 
 export async function fetchDailyReportAPI() {
-    const response = await requestJson('/reports/daily');
-    return response.data || [];
+    const response = await requestJson('/reports/daily-summary');
+    return response.data || {};
+}
+export async function createProductAPI(productData) {
+    return await requestJson('/products', {
+        method: 'POST',
+        body: JSON.stringify(productData)
+    });
+}
+
+export async function updateProductAPI(id, productData) {
+    return await requestJson(`/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(productData)
+    });
 }

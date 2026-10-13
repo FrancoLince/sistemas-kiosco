@@ -11,8 +11,9 @@ def get_products():
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, name, barcode, price, stock 
+                SELECT id, name, barcode, price, stock, image_url 
                 FROM pos_products 
+                WHERE is_active = TRUE
                 ORDER BY name ASC;
             """)
             products = cur.fetchall()
@@ -20,28 +21,6 @@ def get_products():
         return jsonify(products), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
-@products_bp.route('/barcode/<barcode>', methods=['GET'])
-def get_by_barcode(barcode):
-    """Busca un producto individual por código de barras."""
-    try:
-        conn = get_db_connection()
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, name, barcode, price, stock 
-                FROM pos_products 
-                WHERE barcode = %s;
-            """, (barcode,))
-            product = cur.fetchone()
-        conn.close()
-
-        if not product:
-            return jsonify({'success': False, 'error': 'Producto no encontrado'}), 404
-
-        return jsonify({'success': True, 'data': product}), 200
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @products_bp.route('', methods=['POST'])
@@ -52,12 +31,13 @@ def create_product():
     barcode = data.get('barcode')
     price = data.get('price')
     stock = data.get('stock', 0)
+    image_url = data.get('image_url')
 
-    # Convertir strings vacíos o de puros espacios a None para evitar violaciones UNIQUE
     if barcode and isinstance(barcode, str):
-        barcode = barcode.strip()
-        if not barcode:
-            barcode = None
+        barcode = barcode.strip() or None
+
+    if image_url and isinstance(image_url, str):
+        image_url = image_url.strip() or None
 
     if not name or price is None:
         return jsonify({'error': 'El nombre y el precio son obligatorios'}), 400
@@ -66,10 +46,10 @@ def create_product():
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO pos_products (name, barcode, price, stock)
-                VALUES (%s, %s, %s, %s)
-                RETURNING id, name, barcode, price, stock;
-            """, (name, barcode, price, stock))
+                INSERT INTO pos_products (name, barcode, price, stock, image_url, is_active)
+                VALUES (%s, %s, %s, %s, %s, TRUE)
+                RETURNING id, name, barcode, price, stock, image_url;
+            """, (name, barcode, price, stock, image_url))
             new_product = cur.fetchone()
             conn.commit()
         conn.close()
@@ -82,14 +62,16 @@ def create_product():
 
 @products_bp.route('/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
-    """Actualiza precio, stock o datos de un producto."""
+    """Actualiza precio, stock, imagen o datos de un producto."""
     data = request.get_json() or {}
     barcode = data.get('barcode')
+    image_url = data.get('image_url')
 
     if barcode and isinstance(barcode, str):
-        barcode = barcode.strip()
-        if not barcode:
-            barcode = None
+        barcode = barcode.strip() or None
+
+    if image_url and isinstance(image_url, str):
+        image_url = image_url.strip() or None
 
     try:
         conn = get_db_connection()
@@ -97,12 +79,13 @@ def update_product(product_id):
             cur.execute("""
                 UPDATE pos_products
                 SET name = COALESCE(%s, name),
-                    barcode = COALESCE(%s, barcode),
+                    barcode = %s,
                     price = COALESCE(%s, price),
-                    stock = COALESCE(%s, stock)
-                WHERE id = %s
-                RETURNING id, name, barcode, price, stock;
-            """, (data.get('name'), barcode, data.get('price'), data.get('stock'), product_id))
+                    stock = COALESCE(%s, stock),
+                    image_url = %s
+                WHERE id = %s AND is_active = TRUE
+                RETURNING id, name, barcode, price, stock, image_url;
+            """, (data.get('name'), barcode, data.get('price'), data.get('stock'), image_url, product_id))
             updated_product = cur.fetchone()
             conn.commit()
         conn.close()
@@ -115,3 +98,26 @@ def update_product(product_id):
         return jsonify({'error': 'Ya existe otro producto registrado con ese código de barras.'}), 400
     except Exception as e:
         return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+
+
+@products_bp.route('/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    """Realiza un borrado lógico del producto."""
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE pos_products 
+                SET is_active = FALSE 
+                WHERE id = %s RETURNING id;
+            """, (product_id,))
+            deleted = cur.fetchone()
+            conn.commit()
+        conn.close()
+
+        if not deleted:
+            return jsonify({'error': 'Producto no encontrado'}), 404
+
+        return jsonify({'success': True, 'message': 'Producto eliminado correctamente'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

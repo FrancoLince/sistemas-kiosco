@@ -5,39 +5,58 @@ reports_bp = Blueprint('reports', __name__)
 
 @reports_bp.route('/daily-summary', methods=['GET'])
 def get_daily_summary():
-    """Obtiene el resumen de ventas e ingresos del día actual."""
+    """Obtiene el resumen de ventas e ingresos del día actual y el historial reciente."""
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            # Total de ventas e ingresos de hoy
-            cur.execute("""
-                SELECT 
-                    COUNT(id) AS total_sales,
-                    COALESCE(SUM(total_amount), 0) AS total_revenue
-                FROM pos_sales
-                WHERE DATE(created_at) = CURRENT_DATE;
-            """)
-            summary = cur.fetchone()
-
-            # Métodos de pago usados hoy
+            # 1. Total de ventas e ingresos de hoy por medio de pago
             cur.execute("""
                 SELECT 
                     payment_method, 
-                    COALESCE(SUM(total_amount), 0) as total
+                    COUNT(id) AS total_sales,
+                    COALESCE(SUM(total), 0) AS total_amount
                 FROM pos_sales
                 WHERE DATE(created_at) = CURRENT_DATE
                 GROUP BY payment_method;
             """)
-            payment_methods = cur.fetchall()
+            summary_rows = cur.fetchall()
+
+            # 2. Historial de las últimas 50 ventas del día con el detalle de sus ítems
+            cur.execute("""
+                SELECT 
+                    s.id,
+                    s.total,
+                    s.payment_method,
+                    s.created_at,
+                    JSON_AGG(
+                        JSON_BUILD_OBJECT(
+                            'product_name', i.product_name,
+                            'quantity', i.quantity,
+                            'unit_price', i.unit_price,
+                            'subtotal', i.subtotal
+                        )
+                    ) AS items
+                FROM pos_sales s
+                JOIN pos_sale_items i ON s.id = i.sale_id
+                WHERE DATE(s.created_at) = CURRENT_DATE
+                GROUP BY s.id
+                ORDER BY s.created_at DESC
+                LIMIT 50;
+            """)
+            sales_history = cur.fetchall()
 
         conn.close()
+
+        # Armar diccionario de totales por medio de pago
+        totals_by_method = {row['payment_method']: float(row['total_amount']) for row in summary_rows}
+        grand_total = sum(totals_by_method.values())
 
         return jsonify({
             'success': True,
             'data': {
-                'total_sales': summary['total_sales'],
-                'total_revenue': float(summary['total_revenue']),
-                'by_payment_method': payment_methods
+                'grand_total': grand_total,
+                'by_payment_method': totals_by_method,
+                'sales_history': sales_history
             }
         }), 200
 

@@ -48,3 +48,8 @@ export async function updateProductAPI(id, productData) {
         body: JSON.stringify(productData)
     });
 }
+export async function deleteProductAPI(id) {
+    return await requestJson(`/products/${id}`, {
+        method: 'DELETE'
+    });
+}

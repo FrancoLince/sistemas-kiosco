@@ -12,6 +12,9 @@
         <header class="pos-header">
             <h1>Punto de Venta</h1>
             <div style="display: flex; gap: 12px; align-items: center;">
+                <button id="btn-open-history-modal" class="btn-secondary" type="button">
+                    📊 Ver Ventas
+                </button>
                 <button id="btn-open-product-modal" class="btn-secondary" type="button">
                     + Nuevo Producto
                 </button>
@@ -62,8 +65,7 @@
         </div>
     </div>
 
-    
-        <!-- Modal Carga / Edición de Producto -->
+    <!-- Modal Carga / Edición de Producto -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -109,6 +111,41 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Historial y Reporte de Ventas -->
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2>Resumen e Historial del Día</h2>
+                <button id="btn-close-history-modal" class="btn-close-modal" type="button">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Tarjetas de Totales -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                    <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                        <small style="color: var(--text-muted); font-weight: 600;">TOTAL DÍA</small>
+                        <h3 id="report-grand-total" style="color: var(--color-success); font-size: 1.2rem;">$0,00</h3>
+                    </div>
+                    <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                        <small style="color: var(--text-muted); font-weight: 600;">EFECTIVO</small>
+                        <h3 id="report-cash-total" style="font-size: 1.1rem;">$0,00</h3>
+                    </div>
+                    <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                        <small style="color: var(--text-muted); font-weight: 600;">MERCADO PAGO</small>
+                        <h3 id="report-mp-total" style="font-size: 1.1rem;">$0,00</h3>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px;">Últimas Ventas Registradas</h3>
+
+                <!-- Lista de Ventas con Scroll -->
+                <div id="sales-history-list" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Filas generadas dinámicamente -->
+                </div>
+            </div>
         </div>
     </div>
 

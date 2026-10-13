@@ -354,3 +354,99 @@ transform: translateY(-1px);
 .btn-complete-sale:active {
 transform: translateY(0);
 }
+/* ==========================================
+   MEDIA QUERIES - RESPONSIVE DESIGN
+   ========================================== */
+
+/* Tablets (pantallas menores a 1024px) */
+@media (max-width: 1024px) {
+  .pos-layout {
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+  }
+  
+  .pos-ticket {
+    padding: 16px;
+  }
+}
+
+/* Celulares y Tablets Verticales (pantallas menores a 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+
+  /* Header flexible en columna */
+  .pos-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  /* Cambiar el Grid a 1 sola columna */
+  .pos-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Ajustar catálogo de productos */
+  #products-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .product-card {
+    padding: 14px;
+  }
+
+  .product-card h3 {
+    font-size: 0.88rem;
+  }
+
+  .product-card .price {
+    font-size: 1.1rem;
+  }
+
+  /* Ticket adaptable en móviles */
+  .pos-ticket {
+    position: static; /* Quitar sticky para que fluya en movil */
+    height: auto;
+    max-height: none;
+    order: 2; /* Asegurar que el ticket vaya abajo del catálogo si se desea */
+  }
+
+  #ticket-items {
+    max-height: 250px; /* Limitar altura interna con scroll en celular */
+  }
+
+  .btn-complete-sale {
+    padding: 14px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Celulares pequeños (menores a 480px) */
+@media (max-width: 480px) {
+  #products-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas parejas de productos */
+    gap: 10px;
+  }
+
+  .ticket-row {
+    padding: 8px 10px;
+  }
+
+  .ticket-row strong {
+    font-size: 0.82rem;
+  }
+
+  .ticket-row span {
+    font-size: 0.88rem;
+    margin-right: 6px;
+  }
+}

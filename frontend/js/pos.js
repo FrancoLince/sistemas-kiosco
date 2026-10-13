@@ -91,6 +91,7 @@ function renderProductsGrid(productsToRender = allProducts) {
 }
 
 // Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
+// Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
 if (barcodeInput) {
     barcodeInput.addEventListener('input', () => {
         const query = barcodeInput.value.trim().toLowerCase();
@@ -103,10 +104,14 @@ if (barcodeInput) {
             return;
         }
 
-        const filtered = allProducts.filter(p => 
-            p.name.toLowerCase().includes(query) || 
-            (p.barcode && p.barcode.includes(query))
-        );
+        // Filtro inteligente: busca si alguna palabra del producto EMPIEZA con lo que tipeas
+        const filtered = allProducts.filter(p => {
+            const words = p.name.toLowerCase().split(' ');
+            const matchesName = words.some(w => w.startsWith(query));
+            const matchesBarcode = p.barcode && p.barcode.includes(query);
+            return matchesName || matchesBarcode;
+        });
+
         renderProductsGrid(filtered);
     });
 

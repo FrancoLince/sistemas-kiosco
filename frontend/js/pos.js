@@ -2,7 +2,8 @@ import {
     fetchProductsAPI, 
     sendSaleAPI, 
     createProductAPI, 
-    updateProductAPI 
+    updateProductAPI,
+    deleteProductAPI 
 } from './api.js';
 
 // Elementos Principales del POS
@@ -23,8 +24,10 @@ const productForm = document.querySelector('#product-form');
 const inputProductId = document.querySelector('#product-id');
 const inputProductName = document.querySelector('#product-name');
 const inputProductBarcode = document.querySelector('#product-barcode');
+const inputProductImage = document.querySelector('#product-image');
 const inputProductPrice = document.querySelector('#product-price');
 const inputProductStock = document.querySelector('#product-stock');
+const btnDeleteProduct = document.querySelector('#btn-delete-product');
 const modalTitle = document.querySelector('#modal-title');
 
 let currentCart = [];
@@ -68,13 +71,23 @@ function renderProductsGrid(productsToRender = allProducts) {
         return;
     }
 
-    productsList.innerHTML = productsToRender.map(p => `
-        <div class="product-card" onclick="addToCartById(${p.id})" style="cursor: pointer;">
-            <h3>${p.name}</h3>
-            <p class="price">${formatCurrency(p.price)}</p>
-            <small>Stock: ${p.stock}</small>
-        </div>
-    `).join('');
+    productsList.innerHTML = productsToRender.map(p => {
+        const imageHtml = p.image_url 
+            ? `<img src="${p.image_url}" alt="${p.name}" class="product-card-img" onerror="this.style.display='none'">` 
+            : '';
+
+        return `
+            <div class="product-card" onclick="addToCartById(${p.id})">
+                <div class="product-actions" onclick="event.stopPropagation();">
+                    <button class="btn-edit-card" onclick="openModalById(${p.id})" title="Editar o borrar">✏️</button>
+                </div>
+                ${imageHtml}
+                <h3>${p.name}</h3>
+                <p class="price">${formatCurrency(p.price)}</p>
+                <small>Stock: ${p.stock}</small>
+            </div>
+        `;
+    }).join('');
 }
 
 // Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
@@ -259,15 +272,23 @@ function openModal(product = null) {
         inputProductId.value = product.id;
         inputProductName.value = product.name;
         inputProductBarcode.value = product.barcode || '';
+        if (inputProductImage) inputProductImage.value = product.image_url || '';
         inputProductPrice.value = product.price;
         inputProductStock.value = product.stock;
+        if (btnDeleteProduct) btnDeleteProduct.style.display = 'inline-flex';
     } else {
         modalTitle.textContent = 'Agregar Nuevo Producto';
         productForm.reset();
         inputProductId.value = '';
+        if (btnDeleteProduct) btnDeleteProduct.style.display = 'none';
     }
     productModal.classList.add('active');
     setTimeout(() => inputProductName.focus(), 100);
+}
+
+function openModalById(id) {
+    const product = allProducts.find(p => p.id === id);
+    if (product) openModal(product);
 }
 
 function closeModal() {
@@ -280,6 +301,29 @@ if (btnOpenProductModal) btnOpenProductModal.addEventListener('click', () => ope
 if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
 if (btnCancelModal) btnCancelModal.addEventListener('click', closeModal);
 
+// Evento Eliminar Producto
+if (btnDeleteProduct) {
+    btnDeleteProduct.addEventListener('click', async () => {
+        const id = inputProductId.value;
+        if (!id) return;
+
+        if (confirm(`¿Estás seguro de que querés eliminar "${inputProductName.value}"?`)) {
+            try {
+                const res = await deleteProductAPI(id);
+                if (res.success) {
+                    alert('Producto eliminado con éxito');
+                    closeModal();
+                    await loadProducts();
+                } else {
+                    alert('Error: ' + res.error);
+                }
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+    });
+}
+
 // Guardar o Actualizar Producto
 if (productForm) {
     productForm.addEventListener('submit', async (e) => {
@@ -289,6 +333,7 @@ if (productForm) {
         const payload = {
             name: inputProductName.value.trim(),
             barcode: inputProductBarcode.value.trim() || null,
+            image_url: inputProductImage ? inputProductImage.value.trim() || null : null,
             price: parseFloat(inputProductPrice.value),
             stock: parseInt(inputProductStock.value, 10) || 0
         };
@@ -316,5 +361,6 @@ if (productForm) {
 
 // Exponer funciones globales
 window.addToCartById = addToCartById;
+window.openModalById = openModalById;
 window.updateQuantity = updateQuantity;
 window.removeFromCart = removeFromCart;

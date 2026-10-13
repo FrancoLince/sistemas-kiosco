@@ -1,5 +1,7 @@
 import { 
     fetchProductsAPI, 
+    fetchCategoriesAPI,
+    fetchReplenishmentAPI,
     sendSaleAPI, 
     createProductAPI, 
     updateProductAPI,
@@ -10,6 +12,7 @@ import {
 // Elementos Principales del POS
 const barcodeInput = document.querySelector('#barcode-input');
 const productsList = document.querySelector('#products-list');
+const categoryChips = document.querySelector('#category-chips');
 const ticketItemsContainer = document.querySelector('#ticket-items');
 const ticketTotal = document.querySelector('#ticket-total');
 const btnFinishSale = document.querySelector('#btn-finish-sale');
@@ -25,17 +28,22 @@ const productForm = document.querySelector('#product-form');
 const inputProductId = document.querySelector('#product-id');
 const inputProductName = document.querySelector('#product-name');
 const inputProductBarcode = document.querySelector('#product-barcode');
+const inputProductCategory = document.querySelector('#product-category');
 const inputProductImage = document.querySelector('#product-image');
 const inputProductPrice = document.querySelector('#product-price');
 const inputProductStock = document.querySelector('#product-stock');
+const inputProductMinStock = document.querySelector('#product-min-stock');
 const btnDeleteProduct = document.querySelector('#btn-delete-product');
 const modalTitle = document.querySelector('#modal-title');
 
-// Elementos del Modal Historial de Ventas
+// Elementos del Modal Historial / Reposición
 const historyModal = document.querySelector('#history-modal');
 const btnOpenHistoryModal = document.querySelector('#btn-open-history-modal');
 const btnCloseHistoryModal = document.querySelector('#btn-close-history-modal');
 const salesHistoryList = document.querySelector('#sales-history-list');
+const replenishmentList = document.querySelector('#replenishment-list');
+const tabSalesBtn = document.querySelector('#tab-sales-btn');
+const tabReplenishBtn = document.querySelector('#tab-replenish-btn');
 
 const reportGrandTotal = document.querySelector('#report-grand-total');
 const reportCashTotal = document.querySelector('#report-cash-total');
@@ -43,6 +51,8 @@ const reportMpTotal = document.querySelector('#report-mp-total');
 
 let currentCart = [];
 let allProducts = [];
+let allCategories = [];
+let selectedCategoryId = 'all';
 
 function formatCurrency(val) {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(val);
@@ -57,13 +67,13 @@ function ensureFocus() {
     }
 }
 
-// Cargar catálogo al iniciar
+// Cargar catálogo y categorías al iniciar
 document.addEventListener('DOMContentLoaded', async () => {
+    await loadCategories();
     await loadProducts();
     ensureFocus();
 });
 
-// Re-enfocar automáticamente al hacer clic en zonas vacías
 document.addEventListener('click', (e) => {
     const isProductModalActive = productModal && productModal.classList.contains('active');
     const isHistoryModalActive = historyModal && historyModal.classList.contains('active');
@@ -73,12 +83,36 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Carga optimizada con caché local (localStorage)
+async function loadCategories() {
+    allCategories = await fetchCategoriesAPI();
+    
+    // Poblar select dentro del modal de producto
+    if (inputProductCategory) {
+        inputProductCategory.innerHTML = `<option value="">Sin Categoría</option>` + 
+            allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    // Poblar chips en el catálogo principal
+    if (categoryChips) {
+        categoryChips.innerHTML = `<button class="chip ${selectedCategoryId === 'all' ? 'active' : ''}" data-cat-id="all">Todos</button>` +
+            allCategories.map(c => `<button class="chip ${selectedCategoryId == c.id ? 'active' : ''}" data-cat-id="${c.id}">${c.name}</button>`).join('');
+        
+        categoryChips.querySelectorAll('.chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryChips.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedCategoryId = btn.dataset.catId;
+                applyFilters();
+            });
+        });
+    }
+}
+
 async function loadProducts() {
     const cachedProducts = localStorage.getItem('pos_products_cache');
     if (cachedProducts) {
         allProducts = JSON.parse(cachedProducts);
-        renderProductsGrid(allProducts);
+        applyFilters();
     }
 
     try {
@@ -86,11 +120,33 @@ async function loadProducts() {
         if (freshProducts && Array.isArray(freshProducts)) {
             allProducts = freshProducts;
             localStorage.setItem('pos_products_cache', JSON.stringify(allProducts));
-            renderProductsGrid(allProducts);
+            applyFilters();
         }
     } catch (err) {
         console.error('Error al actualizar productos desde la API:', err);
     }
+}
+
+function applyFilters() {
+    const query = barcodeInput ? barcodeInput.value.trim().toLowerCase() : '';
+
+    const filtered = allProducts.filter(p => {
+        // Filtro por categoría
+        const matchesCategory = selectedCategoryId === 'all' || p.category_id == selectedCategoryId;
+
+        // Filtro por texto
+        let matchesText = true;
+        if (query && !/^\d+[xX\*]$/.test(query)) {
+            const words = p.name.toLowerCase().split(' ');
+            const matchesName = words.some(w => w.startsWith(query));
+            const matchesBarcode = p.barcode && p.barcode.includes(query);
+            matchesText = matchesName || matchesBarcode;
+        }
+
+        return matchesCategory && matchesText;
+    });
+
+    renderProductsGrid(filtered);
 }
 
 function renderProductsGrid(productsToRender = allProducts) {
@@ -105,6 +161,11 @@ function renderProductsGrid(productsToRender = allProducts) {
             ? `<img src="${p.image_url}" alt="${p.name}" class="product-card-img" loading="lazy" onerror="this.style.display='none'">` 
             : '';
 
+        const isLowStock = p.stock <= (p.min_stock || 5);
+        const stockBadge = isLowStock 
+            ? `<span class="badge-low-stock">⚠️ Reponer (${p.stock})</span>` 
+            : `<small>Stock: ${p.stock}</small>`;
+
         return `
             <div class="product-card" onclick="addToCartById(${p.id})">
                 <div class="product-actions" onclick="event.stopPropagation();">
@@ -113,33 +174,15 @@ function renderProductsGrid(productsToRender = allProducts) {
                 ${imageHtml}
                 <h3>${p.name}</h3>
                 <p class="price">${formatCurrency(p.price)}</p>
-                <small>Stock: ${p.stock}</small>
+                ${stockBadge}
             </div>
         `;
     }).join('');
 }
 
-// Búsqueda en tiempo real + Escáner + Multiplicador (3* o 3x)
+// Búsqueda en tiempo real + Escáner + Multiplicador
 if (barcodeInput) {
-    barcodeInput.addEventListener('input', () => {
-        const query = barcodeInput.value.trim().toLowerCase();
-        
-        if (/^\d+[xX\*]$/.test(query)) return;
-
-        if (!query) {
-            renderProductsGrid(allProducts);
-            return;
-        }
-
-        const filtered = allProducts.filter(p => {
-            const words = p.name.toLowerCase().split(' ');
-            const matchesName = words.some(w => w.startsWith(query));
-            const matchesBarcode = p.barcode && p.barcode.includes(query);
-            return matchesName || matchesBarcode;
-        });
-
-        renderProductsGrid(filtered);
-    });
+    barcodeInput.addEventListener('input', applyFilters);
 
     barcodeInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
@@ -166,11 +209,11 @@ if (barcodeInput) {
             if (product) {
                 addToCart(product, quantity);
                 barcodeInput.value = '';
-                renderProductsGrid(allProducts);
+                applyFilters();
             } else {
                 alert('Producto no encontrado');
                 barcodeInput.value = '';
-                renderProductsGrid(allProducts);
+                applyFilters();
             }
         }
     });
@@ -261,9 +304,7 @@ async function finishSale() {
     ensureFocus();
 }
 
-if (btnFinishSale) {
-    btnFinishSale.addEventListener('click', finishSale);
-}
+if (btnFinishSale) btnFinishSale.addEventListener('click', finishSale);
 
 // Global Keyboard Shortcuts
 document.addEventListener('keydown', (e) => {
@@ -288,7 +329,7 @@ document.addEventListener('keydown', (e) => {
             currentCart = [];
             renderTicket();
             barcodeInput.value = '';
-            renderProductsGrid(allProducts);
+            applyFilters();
         }
         ensureFocus();
     }
@@ -301,14 +342,17 @@ function openModal(product = null) {
         inputProductId.value = product.id;
         inputProductName.value = product.name;
         inputProductBarcode.value = product.barcode || '';
+        if (inputProductCategory) inputProductCategory.value = product.category_id || '';
         if (inputProductImage) inputProductImage.value = product.image_url || '';
         inputProductPrice.value = product.price;
         inputProductStock.value = product.stock;
+        if (inputProductMinStock) inputProductMinStock.value = product.min_stock || 5;
         if (btnDeleteProduct) btnDeleteProduct.style.display = 'inline-flex';
     } else {
         modalTitle.textContent = 'Agregar Nuevo Producto';
         productForm.reset();
         inputProductId.value = '';
+        if (inputProductMinStock) inputProductMinStock.value = 5;
         if (btnDeleteProduct) btnDeleteProduct.style.display = 'none';
     }
     productModal.classList.add('active');
@@ -330,7 +374,6 @@ if (btnOpenProductModal) btnOpenProductModal.addEventListener('click', () => ope
 if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
 if (btnCancelModal) btnCancelModal.addEventListener('click', closeModal);
 
-// Evento Eliminar Producto
 if (btnDeleteProduct) {
     btnDeleteProduct.addEventListener('click', async () => {
         const id = inputProductId.value;
@@ -353,7 +396,6 @@ if (btnDeleteProduct) {
     });
 }
 
-// Guardar o Actualizar Producto
 if (productForm) {
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -362,9 +404,11 @@ if (productForm) {
         const payload = {
             name: inputProductName.value.trim(),
             barcode: inputProductBarcode.value.trim() || null,
+            category_id: inputProductCategory && inputProductCategory.value ? parseInt(inputProductCategory.value, 10) : null,
             image_url: inputProductImage ? inputProductImage.value.trim() || null : null,
             price: parseFloat(inputProductPrice.value),
-            stock: parseInt(inputProductStock.value, 10) || 0
+            stock: parseInt(inputProductStock.value, 10) || 0,
+            min_stock: inputProductMinStock ? parseInt(inputProductMinStock.value, 10) || 5 : 5
         };
 
         try {
@@ -388,7 +432,7 @@ if (productForm) {
     });
 }
 
-// Lógica Modal Historial de Ventas
+// Lógica Modal Historial / Reposición
 if (btnOpenHistoryModal) {
     btnOpenHistoryModal.addEventListener('click', async () => {
         historyModal.classList.add('active');
@@ -402,6 +446,23 @@ function closeHistoryModal() {
 }
 
 if (btnCloseHistoryModal) btnCloseHistoryModal.addEventListener('click', closeHistoryModal);
+
+if (tabSalesBtn && tabReplenishBtn) {
+    tabSalesBtn.addEventListener('click', () => {
+        tabSalesBtn.classList.add('active');
+        tabReplenishBtn.classList.remove('active');
+        if (salesHistoryList) salesHistoryList.style.display = 'flex';
+        if (replenishmentList) replenishmentList.style.display = 'none';
+    });
+
+    tabReplenishBtn.addEventListener('click', async () => {
+        tabReplenishBtn.classList.add('active');
+        tabSalesBtn.classList.remove('active');
+        if (salesHistoryList) salesHistoryList.style.display = 'none';
+        if (replenishmentList) replenishmentList.style.display = 'flex';
+        await loadReplenishmentList();
+    });
+}
 
 async function loadSalesHistory() {
     if (!salesHistoryList) return;
@@ -441,6 +502,33 @@ async function loadSalesHistory() {
 
     } catch (err) {
         salesHistoryList.innerHTML = `<p style="text-align:center; color: var(--color-danger);">Error al cargar reporte: ${err.message}</p>`;
+    }
+}
+
+async function loadReplenishmentList() {
+    if (!replenishmentList) return;
+    replenishmentList.innerHTML = `<p style="text-align:center; color: var(--text-muted);">Cargando lista de reposición...</p>`;
+
+    try {
+        const items = await fetchReplenishmentAPI();
+        if (!items || items.length === 0) {
+            replenishmentList.innerHTML = `<p style="text-align:center; color: var(--color-success); font-weight: 600;">🎉 ¡Excelente! Todo el stock está al día.</p>`;
+            return;
+        }
+
+        replenishmentList.innerHTML = items.map(item => `
+            <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>${item.name}</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Stock actual: ${item.stock} | Mínimo: ${item.min_stock}</p>
+                </div>
+                <span style="background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem;">
+                    Comprar: +${item.needed > 0 ? item.needed : 1}
+                </span>
+            </div>
+        `).join('');
+    } catch (err) {
+        replenishmentList.innerHTML = `<p style="text-align:center; color: var(--color-danger);">Error al cargar reposición: ${err.message}</p>`;
     }
 }
 

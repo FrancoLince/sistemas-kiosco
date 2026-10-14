@@ -6,7 +6,7 @@ products_bp = Blueprint('products', __name__)
 
 @products_bp.route('', methods=['GET'])
 def get_products():
-    """Obtiene todos los productos activos del catálogo junto con su categoría."""
+    """Obtiene todos los productos activos del catálogo junto con su categoría y precio de costo."""
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
@@ -16,6 +16,7 @@ def get_products():
                     p.name, 
                     p.barcode, 
                     p.price, 
+                    COALESCE(p.cost_price, 0.00) AS cost_price,
                     p.stock, 
                     COALESCE(p.min_stock, 5) AS min_stock, 
                     p.image_url, 
@@ -76,6 +77,7 @@ def create_product():
     name = data.get('name')
     barcode = data.get('barcode')
     price = data.get('price')
+    cost_price = data.get('cost_price', 0.00)
     stock = data.get('stock', 0)
     min_stock = data.get('min_stock', 5)
     category_id = data.get('category_id')
@@ -94,10 +96,10 @@ def create_product():
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO pos_products (name, barcode, price, stock, min_stock, category_id, image_url, is_active)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, TRUE)
-                RETURNING id, name, barcode, price, stock, min_stock, category_id, image_url;
-            """, (name, barcode, price, stock, min_stock, category_id, image_url))
+                INSERT INTO pos_products (name, barcode, price, cost_price, stock, min_stock, category_id, image_url, is_active)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, TRUE)
+                RETURNING id, name, barcode, price, cost_price, stock, min_stock, category_id, image_url;
+            """, (name, barcode, price, cost_price, stock, min_stock, category_id, image_url))
             new_product = cur.fetchone()
             conn.commit()
         conn.close()
@@ -110,7 +112,7 @@ def create_product():
 
 @products_bp.route('/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
-    """Actualiza precio, stock, stock mínimo, categoría o imagen de un producto."""
+    """Actualiza precio de venta, precio de costo, stock, stock mínimo, categoría o imagen de un producto."""
     data = request.get_json() or {}
     barcode = data.get('barcode')
     image_url = data.get('image_url')
@@ -129,13 +131,24 @@ def update_product(product_id):
                 SET name = COALESCE(%s, name),
                     barcode = %s,
                     price = COALESCE(%s, price),
+                    cost_price = COALESCE(%s, cost_price),
                     stock = COALESCE(%s, stock),
                     min_stock = COALESCE(%s, min_stock),
                     category_id = %s,
                     image_url = %s
                 WHERE id = %s AND is_active = TRUE
-                RETURNING id, name, barcode, price, stock, min_stock, category_id, image_url;
-            """, (data.get('name'), barcode, data.get('price'), data.get('stock'), data.get('min_stock'), data.get('category_id'), image_url, product_id))
+                RETURNING id, name, barcode, price, cost_price, stock, min_stock, category_id, image_url;
+            """, (
+                data.get('name'), 
+                barcode, 
+                data.get('price'), 
+                data.get('cost_price'), 
+                data.get('stock'), 
+                data.get('min_stock'), 
+                data.get('category_id'), 
+                image_url, 
+                product_id
+            ))
             updated_product = cur.fetchone()
             conn.commit()
         conn.close()

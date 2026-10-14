@@ -497,143 +497,143 @@ transform: translateY(0);
   background: var(--brand-primary-hover);
 }
 /* ==========================================
-   MEDIA QUERIES - RESPONSIVE DESIGN (Fase 1 & 2)
+   OPTIMIZACIÓN RESPONSIVE MOBILE (CELULARES)
    ========================================== */
 
-/* Tablets (pantallas menores a 1024px) */
-@media (max-width: 1024px) {
-  .pos-layout {
-    grid-template-columns: 1fr 340px;
-    gap: 16px;
-  }
-  
-  .pos-ticket {
-    padding: 16px;
-  }
-}
-
-/* Celulares y Tablets Verticales (pantallas menores a 768px) */
 @media (max-width: 768px) {
   body {
-    padding: 8px;
+    padding: 8px !important;
   }
 
   .pos-container {
-    gap: 12px;
+    padding: 0 !important;
+    gap: 12px !important;
   }
 
-  /* Header flexible y apilado */
+  /* 1. Header amplio y limpio a ancho completo */
   .pos-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 14px;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    padding: 14px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
   }
 
   .pos-header h1 {
-    font-size: 1.3rem;
-    text-align: center;
+    font-size: 1.25rem !important;
+    text-align: center !important;
+    margin: 0 !important;
   }
 
+  /* Botones de acción arriba en 2 columnas iguales */
   .pos-header > div {
-    flex-direction: column;
-    width: 100%;
-    gap: 8px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
 
   .pos-header button {
-    width: 100%;
+    width: 100% !important;
+    padding: 10px 6px !important;
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    justify-content: center !important;
   }
 
+  /* Buscador ocupando toda la fila de abajo */
   .search-box {
-    width: 100%;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
   }
 
-  /* Cambiar Layout a 1 columna */
+  .search-box input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 12px !important;
+  }
+
+  /* 2. Disposición del catálogo y ticket */
   .pos-layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
   }
 
-  /* Chips de Categorías con scroll táctil continuo */
+  /* Chips de categorías desplegables */
   .category-chips-container {
-    width: 100%;
-    padding-bottom: 6px;
+    width: 100% !important;
+    overflow-x: auto !important;
+    padding-bottom: 6px !important;
   }
 
-  /* Catálogo de productos */
+  /* 3. Grilla de productos (2 columnas simétricas) */
   #products-list {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 
   .product-card {
-    padding: 10px;
+    padding: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  /* Ajuste de imagen para que no quede cortada ni con parches grises */
+  .product-card-img {
+    width: 100% !important;
+    height: 110px !important;
+    object-fit: contain !important;
+    background: #ffffff !important;
+    border-radius: var(--radius-sm, 6px) !important;
+    margin-bottom: 8px !important;
   }
 
   .product-card h3 {
-    font-size: 0.85rem;
+    font-size: 0.85rem !important;
+    line-height: 1.2 !important;
+    margin: 4px 0 !important;
+    min-height: 2.4em !important; /* Mantiene la misma altura en todas las tarjetas */
   }
 
   .product-card .price {
-    font-size: 1rem;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    margin: 2px 0 !important;
   }
 
-  /* Ticket adaptable */
-  .pos-ticket {
-    position: static;
-    height: auto;
-    max-height: none;
-    order: 2;
+  /* Botón flotante de edición en la esquina */
+  .product-actions {
+    position: absolute !important;
+    top: 6px !important;
+    right: 6px !important;
+    z-index: 2 !important;
   }
 
-  #ticket-items {
-    max-height: 220px;
+  .btn-edit-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 50% !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
   }
 
-  .btn-complete-sale {
-    padding: 14px;
-    font-size: 0.95rem;
-  }
-
-  /* Modales adaptables (ABM y Reportes) */
+  /* Modales a pantalla limpia */
   .modal-card {
-    width: 95%;
+    width: 92% !important;
     max-width: 100% !important;
-    padding: 16px;
-    margin: 10px auto;
+    padding: 16px !important;
+    margin: 10px auto !important;
   }
 
   .form-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-
-/* Celulares pequeños (menores a 480px) */
-@media (max-width: 480px) {
-  #products-list {
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas exactas para celulares */
-    gap: 8px;
-  }
-
-  .ticket-row {
-    padding: 8px 6px;
-    font-size: 0.85rem;
-  }
-
-  .ticket-row strong {
-    font-size: 0.82rem;
-  }
-
-  .ticket-row span {
-    font-size: 0.85rem;
-    margin-right: 4px;
-  }
-
-  /* Badges de stock bajo ajustados para pantallas reducidas */
-  .badge-low-stock {
-    font-size: 0.68rem;
-    padding: 2px 4px;
+    flex-direction: column !important;
+    gap: 10px !important;
   }
 }

@@ -497,7 +497,7 @@ transform: translateY(0);
   background: var(--brand-primary-hover);
 }
 /* ==========================================
-   MEDIA QUERIES - RESPONSIVE DESIGN
+   MEDIA QUERIES - RESPONSIVE DESIGN (Fase 1 & 2)
    ========================================== */
 
 /* Tablets (pantallas menores a 1024px) */
@@ -515,72 +515,111 @@ transform: translateY(0);
 /* Celulares y Tablets Verticales (pantallas menores a 768px) */
 @media (max-width: 768px) {
   body {
-    padding: 12px;
+    padding: 8px;
   }
 
-  /* Header flexible en columna */
+  .pos-container {
+    gap: 12px;
+  }
+
+  /* Header flexible y apilado */
   .pos-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
-    padding: 16px;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .pos-header h1 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .pos-header > div {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .pos-header button {
+    width: 100%;
   }
 
   .search-box {
     width: 100%;
   }
 
-  /* Cambiar el Grid a 1 sola columna */
+  /* Cambiar Layout a 1 columna */
   .pos-layout {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 
-  /* Ajustar catálogo de productos */
+  /* Chips de Categorías con scroll táctil continuo */
+  .category-chips-container {
+    width: 100%;
+    padding-bottom: 6px;
+  }
+
+  /* Catálogo de productos */
   #products-list {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
   }
 
   .product-card {
-    padding: 14px;
+    padding: 10px;
   }
 
   .product-card h3 {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
   }
 
   .product-card .price {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
-  /* Ticket adaptable en móviles */
+  /* Ticket adaptable */
   .pos-ticket {
-    position: static; /* Quitar sticky para que fluya en movil */
+    position: static;
     height: auto;
     max-height: none;
-    order: 2; /* Asegurar que el ticket vaya abajo del catálogo si se desea */
+    order: 2;
   }
 
   #ticket-items {
-    max-height: 250px; /* Limitar altura interna con scroll en celular */
+    max-height: 220px;
   }
 
   .btn-complete-sale {
     padding: 14px;
     font-size: 0.95rem;
   }
+
+  /* Modales adaptables (ABM y Reportes) */
+  .modal-card {
+    width: 95%;
+    max-width: 100% !important;
+    padding: 16px;
+    margin: 10px auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 /* Celulares pequeños (menores a 480px) */
 @media (max-width: 480px) {
   #products-list {
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas parejas de productos */
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas exactas para celulares */
+    gap: 8px;
   }
 
   .ticket-row {
-    padding: 8px 10px;
+    padding: 8px 6px;
+    font-size: 0.85rem;
   }
 
   .ticket-row strong {
@@ -588,7 +627,13 @@ transform: translateY(0);
   }
 
   .ticket-row span {
-    font-size: 0.88rem;
-    margin-right: 6px;
+    font-size: 0.85rem;
+    margin-right: 4px;
+  }
+
+  /* Badges de stock bajo ajustados para pantallas reducidas */
+  .badge-low-stock {
+    font-size: 0.68rem;
+    padding: 2px 4px;
   }
 }

@@ -30,6 +30,7 @@ const inputProductName = document.querySelector('#product-name');
 const inputProductBarcode = document.querySelector('#product-barcode');
 const inputProductCategory = document.querySelector('#product-category');
 const inputProductImage = document.querySelector('#product-image');
+const inputProductCostPrice = document.querySelector('#product-cost-price');
 const inputProductPrice = document.querySelector('#product-price');
 const inputProductStock = document.querySelector('#product-stock');
 const inputProductMinStock = document.querySelector('#product-min-stock');
@@ -46,6 +47,7 @@ const tabSalesBtn = document.querySelector('#tab-sales-btn');
 const tabReplenishBtn = document.querySelector('#tab-replenish-btn');
 
 const reportGrandTotal = document.querySelector('#report-grand-total');
+const reportNetProfit = document.querySelector('#report-net-profit');
 const reportCashTotal = document.querySelector('#report-cash-total');
 const reportMpTotal = document.querySelector('#report-mp-total');
 
@@ -344,6 +346,7 @@ function openModal(product = null) {
         inputProductBarcode.value = product.barcode || '';
         if (inputProductCategory) inputProductCategory.value = product.category_id || '';
         if (inputProductImage) inputProductImage.value = product.image_url || '';
+        if (inputProductCostPrice) inputProductCostPrice.value = product.cost_price || 0;
         inputProductPrice.value = product.price;
         inputProductStock.value = product.stock;
         if (inputProductMinStock) inputProductMinStock.value = product.min_stock || 5;
@@ -406,6 +409,7 @@ if (productForm) {
             barcode: inputProductBarcode.value.trim() || null,
             category_id: inputProductCategory && inputProductCategory.value ? parseInt(inputProductCategory.value, 10) : null,
             image_url: inputProductImage ? inputProductImage.value.trim() || null : null,
+            cost_price: inputProductCostPrice ? parseFloat(inputProductCostPrice.value) || 0.0 : 0.0,
             price: parseFloat(inputProductPrice.value),
             stock: parseInt(inputProductStock.value, 10) || 0,
             min_stock: inputProductMinStock ? parseInt(inputProductMinStock.value, 10) || 5 : 5
@@ -475,6 +479,7 @@ async function loadSalesHistory() {
         if (!reportData || !reportData.sales_history || reportData.sales_history.length === 0) {
             salesHistoryList.innerHTML = `<p style="text-align:center; color: var(--text-muted);">No hay ventas registradas hoy.</p>`;
             if (reportGrandTotal) reportGrandTotal.textContent = formatCurrency(0);
+            if (reportNetProfit) reportNetProfit.textContent = formatCurrency(0);
             if (reportCashTotal) reportCashTotal.textContent = formatCurrency(0);
             if (reportMpTotal) reportMpTotal.textContent = formatCurrency(0);
             return;
@@ -482,6 +487,7 @@ async function loadSalesHistory() {
 
         const totals = reportData.by_payment_method || {};
         if (reportGrandTotal) reportGrandTotal.textContent = formatCurrency(reportData.grand_total || 0);
+        if (reportNetProfit) reportNetProfit.textContent = formatCurrency(reportData.net_profit || 0);
         if (reportCashTotal) reportCashTotal.textContent = formatCurrency(totals.efectivo || 0);
         if (reportMpTotal) reportMpTotal.textContent = formatCurrency((totals.transferencia || 0) + (totals.tarjeta || 0));
 

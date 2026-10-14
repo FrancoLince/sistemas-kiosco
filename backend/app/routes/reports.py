@@ -5,7 +5,7 @@ reports_bp = Blueprint('reports', __name__)
 
 @reports_bp.route('/daily-summary', methods=['GET'])
 def get_daily_summary():
-    """Obtiene el resumen de ventas e ingresos del día actual y el historial reciente."""
+    """Obtiene el resumen de ventas, ingresos, ganancia limpia del día actual y el historial reciente."""
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
@@ -21,7 +21,17 @@ def get_daily_summary():
             """)
             summary_rows = cur.fetchall()
 
-            # 2. Historial de las últimas 50 ventas del día con el detalle de sus ítems
+            # 2. Costo total de lo vendido hoy para calcular la ganancia limpia
+            cur.execute("""
+                SELECT 
+                    COALESCE(SUM(i.quantity * i.unit_cost), 0) AS total_cost
+                FROM pos_sale_items i
+                JOIN pos_sales s ON i.sale_id = s.id
+                WHERE DATE(s.created_at) = CURRENT_DATE;
+            """)
+            cost_row = cur.fetchone()
+
+            # 3. Historial de las últimas 50 ventas del día con el detalle de sus ítems
             cur.execute("""
                 SELECT 
                     s.id,
@@ -33,6 +43,7 @@ def get_daily_summary():
                             'product_name', i.product_name,
                             'quantity', i.quantity,
                             'unit_price', i.unit_price,
+                            'unit_cost', i.unit_cost,
                             'subtotal', i.subtotal
                         )
                     ) AS items
@@ -50,11 +61,17 @@ def get_daily_summary():
         # Armar diccionario de totales por medio de pago
         totals_by_method = {row['payment_method']: float(row['total_amount']) for row in summary_rows}
         grand_total = sum(totals_by_method.values())
+        total_cost = float(cost_row['total_cost']) if cost_row else 0.0
+        net_profit = grand_total - total_cost
+        margin_percent = ((net_profit / grand_total) * 100) if grand_total > 0 else 0.0
 
         return jsonify({
             'success': True,
             'data': {
                 'grand_total': grand_total,
+                'total_cost': total_cost,
+                'net_profit': net_profit,
+                'margin_percent': round(margin_percent, 2),
                 'by_payment_method': totals_by_method,
                 'sales_history': sales_history
             }

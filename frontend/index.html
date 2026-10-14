@@ -108,9 +108,16 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="product-price">Precio ($) *</label>
+                        <label for="product-cost-price">Precio Costo ($)</label>
+                        <input type="number" id="product-cost-price" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Precio Venta ($) *</label>
                         <input type="number" id="product-price" step="0.01" min="0" placeholder="0.00" required>
                     </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label for="product-stock">Stock Actual</label>
                         <input type="number" id="product-stock" min="0" value="0">
@@ -136,7 +143,7 @@
 
     <!-- Modal de Historial y Reporte de Ventas / Reposición -->
     <div id="history-modal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 650px;">
+        <div class="modal-card" style="max-width: 700px;">
             <div class="modal-header">
                 <h2>Cierre de Caja & Reposición</h2>
                 <button id="btn-close-history-modal" class="btn-close-modal" type="button">&times;</button>
@@ -148,6 +155,10 @@
                     <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
                         <small style="color: var(--text-muted); font-weight: 600;">TOTAL DÍA</small>
                         <h3 id="report-grand-total" style="color: var(--color-success); font-size: 1.2rem;">$0,00</h3>
+                    </div>
+                    <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                        <small style="color: var(--text-muted); font-weight: 600;">GANANCIA LIMPIA</small>
+                        <h3 id="report-net-profit" style="color: #2563eb; font-size: 1.2rem;">$0,00</h3>
                     </div>
                     <div style="background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center;">
                         <small style="color: var(--text-muted); font-weight: 600;">EFECTIVO</small>

@@ -170,7 +170,6 @@ function renderProductsGrid(productsToRender = allProducts) {
 
         return `
             <div class="product-card" onclick="addToCartById(${p.id})">
-                <button class="btn-edit-card" onclick="event.stopPropagation(); openModalById(${p.id})" title="Editar o borrar">✏️</button>
                 <div class="product-card-img-wrapper">
                     ${imageHtml}
                 </div>
@@ -178,6 +177,9 @@ function renderProductsGrid(productsToRender = allProducts) {
                     <h3>${p.name}</h3>
                     <p class="price">${formatCurrency(p.price)}</p>
                     ${stockBadge}
+                </div>
+                <div class="product-actions" onclick="event.stopPropagation();">
+                    <button class="btn-edit-card" onclick="openModalById(${p.id})" title="Editar o borrar">✏️</button>
                 </div>
             </div>
         `;

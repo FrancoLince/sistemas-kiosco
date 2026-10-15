@@ -577,10 +577,11 @@ body {
 }
 
 /* ==========================================
-   DISEÑO MOBILE DEFINITIVO (POS KIOSCO)
+   DISEÑO RESPONSIVO DEFINITIVO - MÓVIL Y TABLET
    ========================================== */
 
 @media (max-width: 768px) {
+  /* 1. Reset de márgenes de pantalla */
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -591,25 +592,22 @@ body {
 
   .pos-container {
     width: 100% !important;
-    max-width: 100% !important;
     padding: 10px !important;
     box-sizing: border-box !important;
   }
 
-  /* 1. Header amplio y ordenado */
+  /* 2. Header Mobile Apilado */
   .pos-header {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
     flex-direction: column !important;
-    padding: 14px !important;
-    gap: 10px !important;
+    padding: 12px !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .pos-header h1 {
     font-size: 1.2rem !important;
     text-align: center !important;
-    margin: 0 !important;
   }
 
   .pos-header > div {
@@ -619,12 +617,7 @@ body {
     gap: 8px !important;
   }
 
-  .pos-header button {
-    width: 100% !important;
-    padding: 10px !important;
-    font-size: 0.9rem !important;
-  }
-
+  .pos-header button, 
   .search-box {
     width: 100% !important;
   }
@@ -632,11 +625,10 @@ body {
   .search-box input {
     width: 100% !important;
     box-sizing: border-box !important;
-    padding: 10px 12px !important;
-    font-size: 0.95rem !important;
+    padding: 10px 12px 10px 36px !important;
   }
 
-  /* 2. Disposición general en 1 columna vertical */
+  /* 3. Contenedor Principal (1 columna) */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
@@ -645,14 +637,16 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Chips de Categorías */
+  /* 4. Chips de Categoría con scroll suave */
   .category-chips-container {
     width: 100% !important;
     overflow-x: auto !important;
+    white-space: nowrap !important;
     padding-bottom: 6px !important;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* 3. Grilla de Tarjetas (2 columnas parejas en celular) */
+  /* 5. Catálogo: Grilla de 2 Columnas Estilizadas */
   #products-list {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -661,7 +655,6 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Tarjeta vertical limpia */
   .product-card {
     display: flex !important;
     flex-direction: column !important;
@@ -669,119 +662,89 @@ body {
     padding: 10px !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    background: #ffffff !important;
+    background: var(--bg-surface, #ffffff) !important;
     border-radius: var(--radius-md, 8px) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
     border: 1px solid var(--border-subtle, #e2e8f0) !important;
     position: relative !important;
     overflow: hidden !important;
   }
 
-  /* Imagen de producto encajada correctamente */
-  .product-card-img {
+  .product-card-img-wrapper {
     width: 100% !important;
     height: 90px !important;
-    max-height: 90px !important;
-    object-fit: contain !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     background: #ffffff !important;
-    border-radius: var(--radius-sm, 6px) !important;
-    margin: 0 0 6px 0 !important;
+    margin-bottom: 6px !important;
   }
 
-  .product-card h3 {
+  .product-card-img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  .product-card-info h3 {
     font-size: 0.85rem !important;
-    line-height: 1.25 !important;
-    margin: 4px 0 !important;
+    line-height: 1.2 !important;
+    margin: 2px 0 4px 0 !important;
     color: var(--text-heading, #1e293b) !important;
-    min-height: 2.3em !important; /* Mantiene la misma altura de texto para todas las tarjetas */
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
+    height: 2.4em !important;
   }
 
-  .product-card .price {
-    font-size: 1.05rem !important;
+  .product-card-info .price {
+    font-size: 1rem !important;
     font-weight: 700 !important;
-    color: #2563eb !important;
-    margin: 2px 0 !important;
+    color: var(--brand-primary, #2563eb) !important;
+    margin: 0 0 4px 0 !important;
   }
 
-  .product-card small {
-    font-size: 0.72rem !important;
-  }
-
-  /* Botón de editar flotante arriba a la derecha */
-  .product-actions {
+  /* Botón Flotante de Edición (Lápiz) */
+  .btn-edit-card {
     position: absolute !important;
     top: 6px !important;
     right: 6px !important;
-    z-index: 5 !important;
-    margin: 0 !important;
-  }
-
-  .btn-edit-card {
+    z-index: 10 !important;
     width: 28px !important;
     height: 28px !important;
-    background: rgba(255, 255, 255, 0.92) !important;
-    border: 1px solid #cbd5e1 !important;
     border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid var(--border-subtle, #cbd5e1) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-size: 0.75rem !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
     padding: 0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
   }
 
-  /* 4. Ticket de Venta encajado en la pantalla */
+  /* 6. Ticket de Venta Adaptado */
   .pos-ticket {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
     padding: 14px !important;
-    margin: 0 !important;
     height: auto !important;
     position: static !important;
-    overflow: hidden !important;
-  }
-
-  .pos-ticket h2 {
-    font-size: 1.1rem !important;
-    margin-bottom: 10px !important;
   }
 
   #ticket-items {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    max-height: 200px !important;
+    max-height: 180px !important;
     overflow-y: auto !important;
-    margin-bottom: 12px !important;
   }
 
   .ticket-row {
     width: 100% !important;
     box-sizing: border-box !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 8px 0 !important;
-    gap: 6px !important;
-    font-size: 0.85rem !important;
-  }
-
-  .ticket-summary {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
+    padding: 8px !important;
   }
 
   .summary-line {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 6px !important;
@@ -789,33 +752,23 @@ body {
 
   .summary-line select {
     width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 10px !important;
-    font-size: 0.9rem !important;
   }
 
   .total-line {
-    display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
-    align-items: center !important;
-    margin-top: 4px !important;
   }
 
   .btn-complete-sale {
     width: 100% !important;
-    box-sizing: border-box !important;
     padding: 14px !important;
-    font-size: 1rem !important;
-    text-align: center !important;
   }
 
-  /* Modales al 95% en celular */
+  /* 7. Modales Móviles */
   .modal-card {
     width: 95% !important;
     max-width: 100% !important;
     padding: 16px !important;
-    margin: 0 auto !important;
     box-sizing: border-box !important;
   }
 

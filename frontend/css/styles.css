@@ -575,27 +575,33 @@ transform: translateY(0);
     margin-top: 4px;
 }
 /* ==========================================
-   OPTIMIZACIÓN DE VISTA MOBILE (POS KIOSCO)
+   VISTA MOBILE: 1 PRODUCTO POR FILA (LISTA)
    ========================================== */
 
 @media (max-width: 768px) {
-  /* Eliminar márgenes sobrantes para ganar espacio de pantalla */
-  body {
-    padding: 6px !important;
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .pos-container {
-    padding: 0 !important;
-    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Header a ancho completo */
+  /* 1. Header estirado al 100% del celular */
   .pos-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
     flex-direction: column !important;
     padding: 12px !important;
     gap: 10px !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
   }
 
   .pos-header h1 {
@@ -604,25 +610,20 @@ transform: translateY(0);
     margin: 0 !important;
   }
 
-  /* Botones arriba en 2 columnas iguales */
   .pos-header > div {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
+    gap: 8px !important;
   }
 
   .pos-header button {
     width: 100% !important;
-    padding: 10px 4px !important;
-    font-size: 0.8rem !important;
-    text-align: center !important;
-    justify-content: center !important;
+    padding: 10px !important;
+    font-size: 0.9rem !important;
   }
 
-  /* Buscador ocupando todo el ancho */
   .search-box {
-    grid-column: 1 / -1 !important;
     width: 100% !important;
   }
 
@@ -630,118 +631,94 @@ transform: translateY(0);
     width: 100% !important;
     box-sizing: border-box !important;
     padding: 10px 12px !important;
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
   }
 
-  /* Disposición vertical principal */
+  /* 2. Disposición en 1 sola columna vertical */
   .pos-layout {
     grid-template-columns: 1fr !important;
+    width: 100% !important;
     gap: 12px !important;
   }
 
-  /* Scroll de categorías táctil */
+  /* Chips de Categorías deslizables */
   .category-chips-container {
     width: 100% !important;
+    overflow-x: auto !important;
     padding-bottom: 6px !important;
   }
 
-  /* Grilla adaptable de productos */
+  /* 3. Catálogo en 1 solo producto por fila */
   #products-list {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr !important; /* Un producto arriba del otro */
+    gap: 10px !important;
+    width: 100% !important;
   }
 
-  /* Tarjeta de Producto optimizada */
+  /* Tarjeta de producto horizontal */
   .product-card {
-    padding: 8px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 80px 1fr 30px !important; /* Foto | Nombre y Precio | Botón Edit */
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
     background: #ffffff !important;
     border-radius: var(--radius-md, 8px) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    position: relative !important;
   }
 
-  /* Foto centrada sin parches grises */
+  /* Foto de producto a la izquierda */
   .product-card-img {
-    width: 100% !important;
-    height: 95px !important;
+    width: 80px !important;
+    height: 80px !important;
     object-fit: contain !important;
     background: #ffffff !important;
-    border-radius: var(--radius-sm, 4px) !important;
-    margin-bottom: 6px !important;
+    margin: 0 !important;
   }
 
   .product-card h3 {
-    font-size: 0.82rem !important;
-    line-height: 1.2 !important;
-    margin: 2px 0 !important;
-    min-height: 2.4em !important;
+    font-size: 0.95rem !important;
+    margin: 0 0 4px 0 !important;
     color: var(--text-heading, #1e293b) !important;
   }
 
   .product-card .price {
-    font-size: 0.95rem !important;
+    font-size: 1.1rem !important;
     font-weight: 700 !important;
-    margin: 2px 0 !important;
     color: #2563eb !important;
+    margin: 0 !important;
   }
 
-  /* Botón flotante para editar */
+  /* Lápiz de edición alineado a la derecha */
   .product-actions {
-    position: absolute !important;
-    top: 4px !important;
-    right: 4px !important;
-    z-index: 2 !important;
+    position: static !important;
   }
 
   .btn-edit-card {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid var(--border-subtle, #e2e8f0) !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: var(--bg-subtle, #f1f5f9) !important;
+    border: 1px solid var(--border-subtle, #cbd5e1) !important;
     border-radius: 50% !important;
-    width: 26px !important;
-    height: 26px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 0.75rem !important;
   }
 
-  /* Modales al 95% de la pantalla */
+  /* Modales al 100% del teléfono */
   .modal-card {
-    width: 95% !important;
+    width: 100% !important;
     max-width: 100% !important;
-    padding: 14px !important;
-    margin: 10px auto !important;
+    padding: 16px !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
   }
 
   .form-row {
     flex-direction: column !important;
-    gap: 8px !important;
-  }
-}
-
-/* Para pantallas de celulares muy angostas (menos de 380px) */
-@media (max-width: 380px) {
-  #products-list {
-    grid-template-columns: 1fr !important; /* Si el cel es muy chico, pasa a 1 sola columna bien legibles */
-  }
-
-  .product-card {
-    flex-direction: row !important;
-    align-items: center !important;
     gap: 10px !important;
-  }
-
-  .product-card-img {
-    width: 65px !important;
-    height: 65px !important;
-    margin-bottom: 0 !important;
-  }
-
-  .product-card h3 {
-    min-height: auto !important;
   }
 }

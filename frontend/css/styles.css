@@ -652,21 +652,23 @@ body {
     padding-bottom: 6px !important;
   }
 
-  /* Catálogo: 1 producto por fila */
+/* Catálogo: Lista vertical de productos bien proporcionados */
   #products-list {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
     width: 100% !important;
   }
 
-  /* Tarjeta de producto horizontal */
+  /* Tarjeta de producto en lista horizontal prolija */
   .product-card {
-    display: grid !important;
-    grid-template-columns: 80px 1fr 30px !important;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
+    justify-content: space-between !important;
     gap: 12px !important;
-    padding: 10px !important;
+    padding: 10px 12px !important;
     width: 100% !important;
+    min-height: 80px !important; /* Mantiene un alto uniforme para todas las filas */
     box-sizing: border-box !important;
     background: #ffffff !important;
     border-radius: var(--radius-md, 8px) !important;
@@ -674,29 +676,41 @@ body {
     position: relative !important;
   }
 
+  /* Imagen cuadrada de tamaño fijo (evita que se alargue o deforme) */
   .product-card-img {
-    width: 80px !important;
-    height: 80px !important;
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
     object-fit: contain !important;
-    background: #ffffff !important;
+    background: var(--bg-subtle, #f8fafc) !important;
+    border-radius: var(--radius-sm, 6px) !important;
     margin: 0 !important;
   }
 
+  /* Contenedor central con nombre, precio y stock */
   .product-card h3 {
-    font-size: 0.95rem !important;
-    margin: 0 0 4px 0 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.2 !important;
+    margin: 0 0 2px 0 !important;
     color: var(--text-heading, #1e293b) !important;
   }
 
   .product-card .price {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
     font-weight: 700 !important;
     color: #2563eb !important;
     margin: 0 !important;
   }
 
+  .product-card small {
+    font-size: 0.7rem !important;
+  }
+
+  /* Botón de editar alineado a la derecha */
   .product-actions {
     position: static !important;
+    margin-left: auto !important;
   }
 
   .btn-edit-card {

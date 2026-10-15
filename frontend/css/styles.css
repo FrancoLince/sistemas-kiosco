@@ -577,7 +577,7 @@ body {
 }
 
 /* ==========================================
-   VISTA MOBILE COMPLETA Y AJUSTADA (CELULARES)
+   DISEÑO MOBILE DEFINITIVO (POS KIOSCO)
    ========================================== */
 
 @media (max-width: 768px) {
@@ -592,17 +592,17 @@ body {
   .pos-container {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 8px !important;
+    padding: 10px !important;
     box-sizing: border-box !important;
   }
 
-  /* Header a pantalla completa */
+  /* 1. Header amplio y ordenado */
   .pos-header {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
     flex-direction: column !important;
-    padding: 12px !important;
+    padding: 14px !important;
     gap: 10px !important;
   }
 
@@ -636,95 +636,105 @@ body {
     font-size: 0.95rem !important;
   }
 
-  /* Contenedor principal vertical */
+  /* 2. Disposición general en 1 columna vertical */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    gap: 12px !important;
+    gap: 16px !important;
     box-sizing: border-box !important;
   }
 
-  /* Chips de Categorías deslizables */
+  /* Chips de Categorías */
   .category-chips-container {
     width: 100% !important;
     overflow-x: auto !important;
     padding-bottom: 6px !important;
   }
 
-/* Catálogo: Lista vertical de productos bien proporcionados */
+  /* 3. Grilla de Tarjetas (2 columnas parejas en celular) */
   #products-list {
-    grid-template-columns: 1fr !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
     width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  /* Tarjeta de producto en lista horizontal prolija */
+  /* Tarjeta vertical limpia */
   .product-card {
     display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
+    flex-direction: column !important;
     justify-content: space-between !important;
-    gap: 12px !important;
-    padding: 10px 12px !important;
+    padding: 10px !important;
     width: 100% !important;
-    min-height: 80px !important; /* Mantiene un alto uniforme para todas las filas */
     box-sizing: border-box !important;
     background: #ffffff !important;
     border-radius: var(--radius-md, 8px) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid var(--border-subtle, #e2e8f0) !important;
     position: relative !important;
+    overflow: hidden !important;
   }
 
-  /* Imagen cuadrada de tamaño fijo (evita que se alargue o deforme) */
+  /* Imagen de producto encajada correctamente */
   .product-card-img {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    min-height: 60px !important;
+    width: 100% !important;
+    height: 90px !important;
+    max-height: 90px !important;
     object-fit: contain !important;
-    background: var(--bg-subtle, #f8fafc) !important;
+    background: #ffffff !important;
     border-radius: var(--radius-sm, 6px) !important;
-    margin: 0 !important;
+    margin: 0 0 6px 0 !important;
   }
 
-  /* Contenedor central con nombre, precio y stock */
   .product-card h3 {
-    font-size: 0.9rem !important;
-    line-height: 1.2 !important;
-    margin: 0 0 2px 0 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.25 !important;
+    margin: 4px 0 !important;
     color: var(--text-heading, #1e293b) !important;
+    min-height: 2.3em !important; /* Mantiene la misma altura de texto para todas las tarjetas */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
   }
 
   .product-card .price {
-    font-size: 1rem !important;
+    font-size: 1.05rem !important;
     font-weight: 700 !important;
     color: #2563eb !important;
-    margin: 0 !important;
+    margin: 2px 0 !important;
   }
 
   .product-card small {
-    font-size: 0.7rem !important;
+    font-size: 0.72rem !important;
   }
 
-  /* Botón de editar alineado a la derecha */
+  /* Botón de editar flotante arriba a la derecha */
   .product-actions {
-    position: static !important;
-    margin-left: auto !important;
+    position: absolute !important;
+    top: 6px !important;
+    right: 6px !important;
+    z-index: 5 !important;
+    margin: 0 !important;
   }
 
   .btn-edit-card {
-    width: 32px !important;
-    height: 32px !important;
-    background: var(--bg-subtle, #f1f5f9) !important;
-    border: 1px solid var(--border-subtle, #cbd5e1) !important;
+    width: 28px !important;
+    height: 28px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-size: 0.75rem !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+    padding: 0 !important;
   }
 
-  /* Ticket de Venta encajado sin scroll lateral */
+  /* 4. Ticket de Venta encajado en la pantalla */
   .pos-ticket {
     width: 100% !important;
     max-width: 100% !important;
@@ -800,7 +810,7 @@ body {
     text-align: center !important;
   }
 
-  /* Modales en celulares */
+  /* Modales al 95% en celular */
   .modal-card {
     width: 95% !important;
     max-width: 100% !important;

@@ -575,98 +575,173 @@ transform: translateY(0);
     margin-top: 4px;
 }
 /* ==========================================
-   MEDIA QUERIES - RESPONSIVE DESIGN
+   OPTIMIZACIÓN DE VISTA MOBILE (POS KIOSCO)
    ========================================== */
 
-/* Tablets (pantallas menores a 1024px) */
-@media (max-width: 1024px) {
-  .pos-layout {
-    grid-template-columns: 1fr 340px;
-    gap: 16px;
-  }
-  
-  .pos-ticket {
-    padding: 16px;
-  }
-}
-
-/* Celulares y Tablets Verticales (pantallas menores a 768px) */
 @media (max-width: 768px) {
+  /* Eliminar márgenes sobrantes para ganar espacio de pantalla */
   body {
-    padding: 12px;
+    padding: 6px !important;
   }
 
-  /* Header flexible en columna */
+  .pos-container {
+    padding: 0 !important;
+    gap: 10px !important;
+  }
+
+  /* Header a ancho completo */
   .pos-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    padding: 16px;
+    flex-direction: column !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
   }
 
+  .pos-header h1 {
+    font-size: 1.2rem !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
+  /* Botones arriba en 2 columnas iguales */
+  .pos-header > div {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .pos-header button {
+    width: 100% !important;
+    padding: 10px 4px !important;
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Buscador ocupando todo el ancho */
   .search-box {
-    width: 100%;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
   }
 
-  /* Cambiar el Grid a 1 sola columna */
+  .search-box input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 12px !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Disposición vertical principal */
   .pos-layout {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
-  /* Ajustar catálogo de productos */
+  /* Scroll de categorías táctil */
+  .category-chips-container {
+    width: 100% !important;
+    padding-bottom: 6px !important;
+  }
+
+  /* Grilla adaptable de productos */
   #products-list {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
   }
 
+  /* Tarjeta de Producto optimizada */
   .product-card {
-    padding: 14px;
+    padding: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    background: #ffffff !important;
+    border-radius: var(--radius-md, 8px) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Foto centrada sin parches grises */
+  .product-card-img {
+    width: 100% !important;
+    height: 95px !important;
+    object-fit: contain !important;
+    background: #ffffff !important;
+    border-radius: var(--radius-sm, 4px) !important;
+    margin-bottom: 6px !important;
   }
 
   .product-card h3 {
-    font-size: 0.88rem;
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+    margin: 2px 0 !important;
+    min-height: 2.4em !important;
+    color: var(--text-heading, #1e293b) !important;
   }
 
   .product-card .price {
-    font-size: 1.1rem;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    margin: 2px 0 !important;
+    color: #2563eb !important;
   }
 
-  /* Ticket adaptable en móviles */
-  .pos-ticket {
-    position: static; /* Quitar sticky para que fluya en movil */
-    height: auto;
-    max-height: none;
-    order: 2; /* Asegurar que el ticket vaya abajo del catálogo si se desea */
+  /* Botón flotante para editar */
+  .product-actions {
+    position: absolute !important;
+    top: 4px !important;
+    right: 4px !important;
+    z-index: 2 !important;
   }
 
-  #ticket-items {
-    max-height: 250px; /* Limitar altura interna con scroll en celular */
+  .btn-edit-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid var(--border-subtle, #e2e8f0) !important;
+    border-radius: 50% !important;
+    width: 26px !important;
+    height: 26px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.75rem !important;
   }
 
-  .btn-complete-sale {
-    padding: 14px;
-    font-size: 0.95rem;
+  /* Modales al 95% de la pantalla */
+  .modal-card {
+    width: 95% !important;
+    max-width: 100% !important;
+    padding: 14px !important;
+    margin: 10px auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-row {
+    flex-direction: column !important;
+    gap: 8px !important;
   }
 }
 
-/* Celulares pequeños (menores a 480px) */
-@media (max-width: 480px) {
+/* Para pantallas de celulares muy angostas (menos de 380px) */
+@media (max-width: 380px) {
   #products-list {
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas parejas de productos */
-    gap: 10px;
+    grid-template-columns: 1fr !important; /* Si el cel es muy chico, pasa a 1 sola columna bien legibles */
   }
 
-  .ticket-row {
-    padding: 8px 10px;
+  .product-card {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
   }
 
-  .ticket-row strong {
-    font-size: 0.82rem;
+  .product-card-img {
+    width: 65px !important;
+    height: 65px !important;
+    margin-bottom: 0 !important;
   }
 
-  .ticket-row span {
-    font-size: 0.88rem;
-    margin-right: 6px;
+  .product-card h3 {
+    min-height: auto !important;
   }
 }

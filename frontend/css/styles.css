@@ -577,11 +577,11 @@ body {
 }
 
 /* ==========================================
-   DISEÑO RESPONSIVO DEFINITIVO - MÓVIL Y TABLET
+   CONFIGURACIÓN MOBILE DEFINITIVA (CELULARES)
    ========================================== */
 
 @media (max-width: 768px) {
-  /* 1. Reset de márgenes de pantalla */
+  /* 1. Eliminar desbordes laterales */
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -592,17 +592,18 @@ body {
 
   .pos-container {
     width: 100% !important;
-    padding: 10px !important;
+    max-width: 100% !important;
+    padding: 8px !important;
     box-sizing: border-box !important;
   }
 
-  /* 2. Header Mobile Apilado */
+  /* 2. Header apilado */
   .pos-header {
-    flex-direction: column !important;
-    padding: 12px !important;
-    gap: 12px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    flex-direction: column !important;
+    padding: 12px !important;
+    gap: 10px !important;
   }
 
   .pos-header h1 {
@@ -628,29 +629,28 @@ body {
     padding: 10px 12px 10px 36px !important;
   }
 
-  /* 3. Contenedor Principal (1 columna) */
+  /* 3. Layout principal vertical */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    gap: 16px !important;
+    gap: 14px !important;
     box-sizing: border-box !important;
   }
 
-  /* 4. Chips de Categoría con scroll suave */
+  /* 4. Chips deslizables */
   .category-chips-container {
     width: 100% !important;
     overflow-x: auto !important;
-    white-space: nowrap !important;
     padding-bottom: 6px !important;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* 5. Catálogo: Grilla de 2 Columnas Estilizadas */
+  /* 5. Catálogo en 2 columnas parejas */
   #products-list {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
@@ -659,24 +659,23 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 10px !important;
+    padding: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    background: var(--bg-surface, #ffffff) !important;
-    border-radius: var(--radius-md, 8px) !important;
-    border: 1px solid var(--border-subtle, #e2e8f0) !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
     position: relative !important;
     overflow: hidden !important;
   }
 
   .product-card-img-wrapper {
     width: 100% !important;
-    height: 90px !important;
+    height: 85px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: #ffffff !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 4px !important;
   }
 
   .product-card-img {
@@ -686,82 +685,63 @@ body {
   }
 
   .product-card-info h3 {
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
     line-height: 1.2 !important;
-    margin: 2px 0 4px 0 !important;
-    color: var(--text-heading, #1e293b) !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
+    margin: 2px 0 !important;
     height: 2.4em !important;
+    overflow: hidden !important;
   }
 
   .product-card-info .price {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     font-weight: 700 !important;
-    color: var(--brand-primary, #2563eb) !important;
-    margin: 0 0 4px 0 !important;
+    color: #2563eb !important;
+    margin: 2px 0 !important;
   }
 
-  /* Botón Flotante de Edición (Lápiz) */
   .btn-edit-card {
     position: absolute !important;
-    top: 6px !important;
-    right: 6px !important;
+    top: 4px !important;
+    right: 4px !important;
     z-index: 10 !important;
-    width: 28px !important;
-    height: 28px !important;
+    width: 26px !important;
+    height: 26px !important;
     border-radius: 50% !important;
     background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid var(--border-subtle, #cbd5e1) !important;
+    border: 1px solid #cbd5e1 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-size: 0.75rem !important;
     padding: 0 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
   }
 
-  /* 6. Ticket de Venta Adaptado */
+  /* 6. Ticket de Venta responsivo */
   .pos-ticket {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    padding: 14px !important;
+    padding: 12px !important;
     height: auto !important;
     position: static !important;
+    overflow: hidden !important;
   }
 
   #ticket-items {
     max-height: 180px !important;
-    overflow-y: auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .ticket-row {
     width: 100% !important;
     box-sizing: border-box !important;
-    padding: 8px !important;
   }
 
-  .summary-line {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 6px !important;
-  }
-
-  .summary-line select {
-    width: 100% !important;
-  }
-
-  .total-line {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-  }
-
+  .summary-line select, 
   .btn-complete-sale {
     width: 100% !important;
-    padding: 14px !important;
+    box-sizing: border-box !important;
   }
 
   /* 7. Modales Móviles */
@@ -769,6 +749,7 @@ body {
     width: 95% !important;
     max-width: 100% !important;
     padding: 16px !important;
+    margin: 0 auto !important;
     box-sizing: border-box !important;
   }
 

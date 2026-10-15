@@ -54,6 +54,12 @@ body {
   border-radius: var(--radius-full);
 }
 
+.pos-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .search-box {
   position: relative;
   width: 380px;
@@ -116,7 +122,7 @@ body {
   gap: 16px;
 }
 
-/* Product Card Styling */
+/* Product Card Styling (Desktop) */
 .product-card {
   background: var(--bg-surface);
   padding: 20px;
@@ -154,6 +160,23 @@ body {
   opacity: 1;
 }
 
+.product-card-img-wrapper {
+  width: 100%;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.product-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 .product-card h3 {
   font-size: 0.95rem;
   font-weight: 600;
@@ -177,15 +200,6 @@ body {
   padding: 3px 8px;
   border-radius: var(--radius-sm);
   align-self: flex-start;
-}
-
-.product-card-img {
-  width: 100%;
-  height: 90px;
-  object-fit: contain;
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
-  background: var(--bg-subtle);
 }
 
 .product-actions {
@@ -577,11 +591,10 @@ body {
 }
 
 /* ==========================================
-   CONFIGURACIÓN MOBILE DEFINITIVA (CELULARES)
+   DISEÑO MOBILE LISTA HORIZONTAL (1 POR FILA)
    ========================================== */
 
 @media (max-width: 768px) {
-  /* 1. Eliminar desbordes laterales */
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -590,55 +603,54 @@ body {
     margin: 0 !important;
   }
 
+  body {
+    padding: 8px !important;
+  }
+
   .pos-container {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 8px !important;
-    box-sizing: border-box !important;
+    padding: 0 !important;
   }
 
-  /* 2. Header apilado */
+  /* Header mobile */
   .pos-header {
-    width: 100% !important;
-    box-sizing: border-box !important;
     flex-direction: column !important;
+    align-items: stretch !important;
     padding: 12px !important;
-    gap: 10px !important;
+    gap: 12px !important;
+    margin-bottom: 12px !important;
   }
 
   .pos-header h1 {
     font-size: 1.2rem !important;
-    text-align: center !important;
+    justify-content: center !important;
   }
 
-  .pos-header > div {
-    display: flex !important;
+  .pos-header-actions {
     flex-direction: column !important;
     width: 100% !important;
     gap: 8px !important;
   }
 
-  .pos-header button, 
+  .pos-header-actions button,
   .search-box {
     width: 100% !important;
   }
 
   .search-box input {
     width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 10px 12px 10px 36px !important;
   }
 
-  /* 3. Layout principal vertical */
+  /* Layout principal en 1 sola columna */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
+    gap: 16px !important;
     width: 100% !important;
-    gap: 14px !important;
-    box-sizing: border-box !important;
   }
 
-  /* 4. Chips deslizables */
+  /* Chips con scroll táctil */
   .category-chips-container {
     width: 100% !important;
     overflow-x: auto !important;
@@ -646,36 +658,41 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* 5. Catálogo en 2 columnas parejas */
+  /* Catálogo: 1 producto por fila */
   #products-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .product-card {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
-    padding: 8px !important;
+    gap: 8px !important;
     width: 100% !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
-    border-radius: 8px !important;
-    border: 1px solid #e2e8f0 !important;
-    position: relative !important;
-    overflow: hidden !important;
   }
 
-  .product-card-img-wrapper {
+  /* Tarjeta en formato de fila horizontal prolija */
+  .product-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    padding: 10px 12px !important;
     width: 100% !important;
-    height: 85px !important;
+    min-height: 72px !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border-subtle) !important;
+    position: relative !important;
+  }
+
+  /* Imagen cuadrada fija a la izquierda */
+  .product-card-img-wrapper {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    margin: 0 !important;
+    background: #ffffff !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin-bottom: 4px !important;
   }
 
   .product-card-img {
@@ -684,77 +701,83 @@ body {
     object-fit: contain !important;
   }
 
+  /* Info alineada al medio */
+  .product-card-info {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    flex: 1 !important;
+  }
+
   .product-card-info h3 {
-    font-size: 0.82rem !important;
+    font-size: 0.9rem !important;
     line-height: 1.2 !important;
-    margin: 2px 0 !important;
-    height: 2.4em !important;
-    overflow: hidden !important;
+    margin: 0 0 2px 0 !important;
   }
 
   .product-card-info .price {
-    font-size: 0.95rem !important;
+    font-size: 1rem !important;
     font-weight: 700 !important;
-    color: #2563eb !important;
-    margin: 2px 0 !important;
+    color: var(--brand-primary) !important;
+    margin: 0 !important;
+  }
+
+  /* Botón de edición fijado a la derecha */
+  .product-actions {
+    position: static !important;
+    margin-left: auto !important;
   }
 
   .btn-edit-card {
-    position: absolute !important;
-    top: 4px !important;
-    right: 4px !important;
-    z-index: 10 !important;
-    width: 26px !important;
-    height: 26px !important;
+    width: 32px !important;
+    height: 32px !important;
     border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid #cbd5e1 !important;
+    background: var(--bg-subtle) !important;
+    border: 1px solid var(--border-subtle) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 0.75rem !important;
+    font-size: 0.8rem !important;
     padding: 0 !important;
   }
 
-  /* 6. Ticket de Venta responsivo */
+  /* Ticket de Venta */
   .pos-ticket {
     width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 12px !important;
+    padding: 16px !important;
     height: auto !important;
     position: static !important;
-    overflow: hidden !important;
   }
 
   #ticket-items {
-    max-height: 180px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    max-height: 200px !important;
   }
 
-  .ticket-row {
-    width: 100% !important;
-    box-sizing: border-box !important;
+  .summary-line {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
   }
 
-  .summary-line select, 
-  .btn-complete-sale {
+  .summary-line select {
     width: 100% !important;
-    box-sizing: border-box !important;
   }
 
-  /* 7. Modales Móviles */
+  .total-line {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Modales */
   .modal-card {
     width: 95% !important;
-    max-width: 100% !important;
     padding: 16px !important;
     margin: 0 auto !important;
-    box-sizing: border-box !important;
   }
 
   .form-row {
-    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
     gap: 10px !important;
   }
 }
